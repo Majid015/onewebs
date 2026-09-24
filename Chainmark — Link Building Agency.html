@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chainmark — Link Building That Moves Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF9; --ink:#14121F; --dim:#6B6880; --line:#E7E4F2;
+  --primary:#3D3BF3; --primary-d:#2E2CD6; --coral:#FF5C39; --mint:#00C896; --card:#F2F1FC;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#FAFAF9; --ink:#14121F; } }
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px);}
+body{background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; overflow-x:hidden; line-height:1.55;}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:600; line-height:1.08; letter-spacing:-0.01em;}
+a{color:inherit; text-decoration:none;}
+.wrap{max-width:1120px; margin:0 auto; padding:0 28px; position:relative;}
+section{padding:100px 0; position:relative;}
+.label{display:inline-block; font-size:13px; font-weight:600; color:var(--primary); background:var(--card); padding:6px 14px; border-radius:99px; margin-bottom:20px;}
+h2{font-size:clamp(28px,4vw,42px); max-width:600px;}
+
+#cursor-glow{position:fixed; width:420px; height:420px; border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(circle, rgba(61,59,243,0.10), transparent 70%); transform:translate(-50%,-50%); transition:opacity .3s; will-change:transform;}
+
+header{position:sticky; top:0; z-index:50; padding-top:env(safe-area-inset-top,0px); transition:box-shadow .3s,background .3s;}
+header.scrolled{background:rgba(250,250,249,0.85); backdrop-filter:blur(10px); box-shadow:0 1px 0 var(--line);}
+nav{display:flex; justify-content:space-between; align-items:center; height:76px;}
+.brand{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:21px;}
+.brand span{color:var(--primary);}
+nav .links{display:flex; gap:30px; font-size:14.5px; font-weight:500; color:var(--dim);}
+nav .links a{position:relative;}
+nav .links a::after{content:'';position:absolute; left:0; bottom:-4px; width:0; height:2px; background:var(--primary); transition:width .25s;}
+nav .links a:hover::after{width:100%;}
+nav .links a:hover{color:var(--ink);}
+.btn{background:var(--primary); color:#fff; font-weight:600; font-size:14.5px; padding:12px 22px; border-radius:10px; border:none; cursor:pointer; display:inline-block; transition:transform .2s, box-shadow .2s;}
+.btn:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(61,59,243,0.35);}
+.btn.coral{background:var(--coral);}
+.btn.coral:hover{box-shadow:0 10px 24px rgba(255,92,57,0.35);}
+.btn-ghost{border:1.5px solid var(--line); padding:12px 22px; border-radius:10px; font-weight:600; font-size:14.5px; transition:border-color .2s, transform .2s;}
+.btn-ghost:hover{border-color:var(--ink); transform:translateY(-3px);}
+@media (max-width:760px){ nav .links{display:none;} }
+
+.reveal{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.in{opacity:1; transform:translateY(0);}
+
+.hero{padding:90px 0 40px; overflow:visible;}
+.node{position:absolute; border-radius:50%; z-index:0;}
+.hero-shapes .n1{width:16px;height:16px;background:var(--coral); top:60px; right:14%; animation:float1 7s ease-in-out infinite;}
+.hero-shapes .n2{width:10px;height:10px;background:var(--mint); top:200px; right:6%; animation:float2 6s ease-in-out infinite;}
+.hero-shapes .n3{width:60px;height:60px;border:2px solid var(--primary); background:transparent; top:30px; left:2%; animation:float1 9s ease-in-out infinite;}
+.hero-shapes .n4{width:22px;height:22px;background:var(--card); border:2px solid var(--primary); top:280px; left:10%; animation:float2 8s ease-in-out infinite;}
+@keyframes float1{0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-22px) rotate(12deg)}}
+@keyframes float2{0%,100%{transform:translateY(0)} 50%{transform:translateY(18px)}}
+.kicker{font-size:14px; font-weight:600; color:var(--coral); margin-bottom:16px; display:flex; align-items:center; gap:8px;}
+.kicker .dot{width:8px;height:8px;border-radius:50%; background:var(--coral); animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1} 50%{opacity:.3}}
+.hero h1{font-size:clamp(40px,6.4vw,72px); max-width:820px; position:relative; z-index:1;}
+.hero h1 .u{position:relative; white-space:nowrap;}
+.hero h1 .u svg{position:absolute; left:0; bottom:-6px; width:100%; height:14px;}
+.hero p.lead{color:var(--dim); font-size:19px; max-width:540px; margin-top:22px;}
+.hero .actions{display:flex; gap:16px; margin-top:34px; flex-wrap:wrap;}
+
+.marquee-wrap{overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:26px 0; margin-top:80px;}
+.marquee{display:flex; gap:64px; white-space:nowrap; animation:scroll 22s linear infinite; width:max-content;}
+@keyframes scroll{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.marquee span{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:20px; color:var(--dim); opacity:.55;}
+
+.stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:64px;}
+.stat-row .num{font-family:'Space Grotesk',sans-serif; font-size:38px; font-weight:700; color:var(--primary);}
+.stat-row .lbl{font-size:13.5px; color:var(--dim); margin-top:4px;}
+@media (max-width:760px){ .stat-row{grid-template-columns:repeat(2,1fr);} }
+
+.process-list{display:flex; flex-direction:column; margin-top:48px;}
+.step{display:grid; grid-template-columns:60px 1fr; gap:24px; padding:30px 0; border-bottom:1px solid var(--line); transition:padding-left .3s;}
+.step:hover{padding-left:10px;}
+.step .n{font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; color:#fff; background:var(--ink); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; transition:background .3s, transform .3s;}
+.step:hover .n{background:var(--primary); transform:rotate(-8deg);}
+.step h3{font-size:21px; margin-bottom:8px;}
+.step p{color:var(--dim); font-size:15.5px; max-width:520px;}
+
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px;}
+.tilt{background:var(--card); border-radius:18px; padding:30px 26px; transition:transform .15s ease, box-shadow .3s ease; will-change:transform;}
+.tilt:hover{box-shadow:0 20px 40px rgba(20,18,31,0.12);}
+.tilt .ico{width:46px;height:46px; border-radius:12px; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:18px;}
+.tilt h3{font-size:19px; margin-bottom:10px;}
+.tilt p{color:var(--dim); font-size:14.5px;}
+@media (max-width:760px){ .grid3{grid-template-columns:1fr;} }
+
+.case-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px;}
+.case{border:1.5px solid var(--line); border-radius:18px; padding:28px; transition:border-color .3s, transform .3s;}
+.case:hover{border-color:var(--primary); transform:translateY(-6px);}
+.case .industry{font-size:12.5px; font-weight:600; color:var(--dim); text-transform:uppercase; letter-spacing:.05em; margin-bottom:14px;}
+.case .big{font-family:'Space Grotesk',sans-serif; font-size:42px; font-weight:700; color:var(--coral);}
+.case .cap{font-size:13.5px; color:var(--dim); margin:6px 0 18px;}
+.case .meta{display:flex; justify-content:space-between; font-size:12.5px; color:var(--dim); border-top:1px solid var(--line); padding-top:14px;}
+@media (max-width:760px){ .case-grid{grid-template-columns:1fr;} }
+
+.testi-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:48px;}
+.testi{background:var(--card); border-radius:18px; padding:30px; transition:transform .3s;}
+.testi:hover{transform:translateY(-4px);}
+.testi blockquote{font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:500; line-height:1.4;}
+.testi .who{margin-top:16px; font-size:13.5px; color:var(--dim);}
+.testi .who b{color:var(--ink);}
+@media (max-width:760px){ .testi-grid{grid-template-columns:1fr;} }
+
+.price-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px; align-items:start;}
+.plan{border:1.5px solid var(--line); border-radius:20px; padding:32px 26px; transition:transform .3s, box-shadow .3s;}
+.plan:hover{transform:translateY(-8px); box-shadow:0 24px 48px rgba(20,18,31,0.12);}
+.plan.feat{border-color:var(--primary); background:var(--ink); color:#fff;}
+.plan.feat .price span, .plan.feat li{color:#C9C7F5;}
+.plan.feat li{border-color:rgba(255,255,255,0.12);}
+.tag{font-size:12px; font-weight:700; color:var(--coral); text-transform:uppercase; letter-spacing:.04em; min-height:14px; margin-bottom:14px;}
+.plan h3{font-size:20px;}
+.plan .price{font-family:'Space Grotesk',sans-serif; font-size:34px; font-weight:700; margin:14px 0 22px;}
+.plan .price span{font-size:14px; color:var(--dim); font-family:'Inter',sans-serif; font-weight:400;}
+.plan ul{list-style:none; font-size:14px; color:var(--dim);}
+.plan li{padding:8px 0; border-top:1px solid var(--line);}
+.plan li:first-child{border-top:none;}
+.plan .btn, .plan .btn-ghost{width:100%; text-align:center; margin-top:24px;}
+
+.faq-item{border-bottom:1px solid var(--line); padding:22px 0;}
+.faq-item summary{cursor:pointer; font-size:16.5px; font-weight:600; font-family:'Space Grotesk',sans-serif; list-style:none; display:flex; justify-content:space-between; align-items:center;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+'; color:var(--primary); font-size:22px; transition:transform .25s;}
+.faq-item[open] summary::after{transform:rotate(45deg);}
+.faq-item p{color:var(--dim); font-size:14.5px; margin-top:12px; max-width:640px;}
+
+.band{background:var(--ink); color:#fff; border-radius:32px; margin:0 28px; text-align:center; overflow:hidden; position:relative;}
+.band .wrap{padding:90px 28px;}
+.band h2{color:#fff; margin:0 auto 28px; max-width:640px;}
+.band .n{position:absolute; border-radius:50%;}
+.band .b1{width:120px;height:120px; background:var(--primary); opacity:.35; top:-40px; left:-40px; filter:blur(20px); animation:float1 10s ease-in-out infinite;}
+.band .b2{width:160px;height:160px; background:var(--coral); opacity:.3; bottom:-60px; right:-40px; filter:blur(24px); animation:float2 12s ease-in-out infinite;}
+
+footer{padding:48px 0; font-size:13px; color:var(--dim);}
+footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;}
+</style>
+</head>
+<body>
+<div id="cursor-glow"></div>
+
+<header id="hdr">
+  <div class="wrap"><nav>
+    <div class="brand">Chain<span>mark</span></div>
+    <div class="links">
+      <a href="#process">Process</a>
+      <a href="#services">Services</a>
+      <a href="#cases">Results</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#pricing" class="btn">Book a call</a>
+  </nav></div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-shapes">
+    <div class="node n1"></div><div class="node n2"></div><div class="node n3"></div><div class="node n4"></div>
+    <div class="kicker"><span class="dot"></span>Link building, done properly</div>
+    <h1 class="reveal">Backlinks that make Google <span class="u">take notice<svg viewBox="0 0 200 14" preserveAspectRatio="none"><path d="M2 10 Q50 2 100 8 T198 6" stroke="#FF5C39" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span>.</h1>
+    <p class="lead reveal">We earn placements on sites your customers already trust — no PBNs, no link farms, no shortcuts that put your domain at risk.</p>
+    <div class="actions reveal">
+      <a href="#pricing" class="btn coral">Get a free link audit</a>
+      <a href="#cases" class="btn-ghost">See results ↓</a>
+    </div>
+
+    <div class="marquee-wrap reveal">
+      <div class="marquee">
+        <span>NimbusCRM</span><span>Ferra Legal</span><span>Basecamp Supply</span><span>Voyage Travel Co</span><span>Ledger&amp;Vine</span><span>Northwind Homes</span><span>Cobalt Labs</span>
+        <span>NimbusCRM</span><span>Ferra Legal</span><span>Basecamp Supply</span><span>Voyage Travel Co</span><span>Ledger&amp;Vine</span><span>Northwind Homes</span><span>Cobalt Labs</span>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="reveal"><div class="num" data-count="1200">0</div><div class="lbl">links placed to date</div></div>
+      <div class="reveal"><div class="num" data-count="61">0</div><div class="lbl">avg. referring domain rating</div></div>
+      <div class="reveal"><div class="num" data-count="92">0</div><div class="lbl">% renew past month six</div></div>
+      <div class="reveal"><div class="num" data-count="7">0</div><div class="lbl">years in link building</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="label reveal">How it works</div>
+    <h2 class="reveal">Four stages, every single link.</h2>
+    <div class="process-list">
+      <div class="step reveal"><div class="n">01</div><div><h3>Target mapping</h3><p>We identify which pages on your site need authority most, based on what's actually holding back rankings — not just the homepage.</p></div></div>
+      <div class="step reveal"><div class="n">02</div><div><h3>Publisher research</h3><p>We shortlist sites that already rank and already get read in your industry, and rule out anything with thin or paid-only link profiles.</p></div></div>
+      <div class="step reveal"><div class="n">03</div><div><h3>Outreach &amp; pitching</h3><p>A real person on our team pitches a real editor with a real reason to link — usually a resource, data point, or expert quote from you.</p></div></div>
+      <div class="step reveal"><div class="n">04</div><div><h3>Placement &amp; reporting</h3><p>Once live, every link is logged with its anchor text, referring domain metrics, and placement date in your dashboard.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="label reveal">What we do</div>
+    <h2 class="reveal">Three ways we build authority.</h2>
+    <div class="grid3">
+      <div class="tilt reveal"><div class="ico">🤝</div><h3>Relationship-based links</h3><p>Ongoing outreach to publishers we've worked with for years, built on genuinely useful content rather than one-off asks.</p></div>
+      <div class="tilt reveal"><div class="ico">🔧</div><h3>Broken link building</h3><p>We find dead links pointing to 404s in your space and offer your content as the working replacement.</p></div>
+      <div class="tilt reveal"><div class="ico">✍️</div><h3>Guest placements</h3><p>Bylined articles pitched to editors who vet contributors carefully — placement is earned, not bought.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <div class="label reveal">Results</div>
+    <h2 class="reveal">What clients see, in their own numbers.</h2>
+    <div class="case-grid">
+      <div class="case reveal"><div class="industry">B2B Software</div><div class="big">+184%</div><div class="cap">organic traffic across 9 months</div><div class="meta"><span>62 links built</span><span>DR 45–80</span></div></div>
+      <div class="case reveal"><div class="industry">Home Services</div><div class="big">+96%</div><div class="cap">organic traffic across 6 months</div><div class="meta"><span>38 links built</span><span>DR 30–65</span></div></div>
+      <div class="case reveal"><div class="industry">E-commerce</div><div class="big">+41%</div><div class="cap">organic traffic across 12 months</div><div class="meta"><span>110 links built</span><span>DR 40–90</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label reveal">From clients</div>
+    <h2 class="reveal">What it's like to work with us.</h2>
+    <div class="testi-grid">
+      <div class="testi reveal"><blockquote>They stopped pitching us generic directories within the first month and started landing sites our own sales team recognized.</blockquote><div class="who"><b>Placeholder Name</b> — Marketing Lead, Placeholder Co.</div></div>
+      <div class="testi reveal"><blockquote>The reporting is the part I didn't expect to care about — every link, every anchor, no guessing what we paid for.</blockquote><div class="who"><b>Placeholder Name</b> — Founder, Placeholder Brand</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="label reveal">Pricing</div>
+    <h2 class="reveal">Fully managed, month to month.</h2>
+    <div class="price-grid">
+      <div class="plan reveal">
+        <div class="tag"></div><h3>Starter</h3>
+        <div class="price">$2,500<span>/mo</span></div>
+        <ul><li>6+ links per month</li><li>Average DR 30–60</li><li>Target page planning</li><li>Monthly reporting</li></ul>
+        <a href="#" class="btn-ghost">Book a call</a>
+      </div>
+      <div class="plan feat reveal">
+        <div class="tag">Most chosen</div><h3>Growth</h3>
+        <div class="price">$5,500<span>/mo</span></div>
+        <ul><li>14+ links per month</li><li>Average DR 40–80</li><li>Competitor gap analysis</li><li>Anchor text strategy</li><li>Live reporting dashboard</li></ul>
+        <a href="#" class="btn coral">Book a call</a>
+      </div>
+      <div class="plan reveal">
+        <div class="tag"></div><h3>Agency</h3>
+        <div class="price">Custom</div>
+        <ul><li>White-label reporting</li><li>Multi-client capacity</li><li>Dedicated strategist</li></ul>
+        <a href="#" class="btn-ghost">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="label reveal">Questions</div>
+    <h2 class="reveal">Before you book a call.</h2>
+    <div style="margin-top:32px;">
+      <details class="faq-item reveal"><summary>How long until we see ranking movement?</summary><p>Most clients see their first placements within three to four weeks, with ranking movement typically following two to three months after that as links accumulate and mature.</p></details>
+      <details class="faq-item reveal"><summary>Do you use private blog networks?</summary><p>No. Every link is placed manually on a site with its own real audience. We won't touch PBNs or link farms — the risk to your domain isn't worth the shortcut.</p></details>
+      <details class="faq-item reveal"><summary>Can we choose which sites you target?</summary><p>You'll see and approve target sites before outreach begins for the first two months, then move to a standing brief once we've calibrated to your niche.</p></details>
+      <details class="faq-item reveal"><summary>What if a link gets taken down?</summary><p>We monitor placements and replace any link removed within the first six months at no extra cost.</p></details>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="band">
+    <div class="n b1"></div><div class="n b2"></div>
+    <div class="wrap">
+      <h2 class="reveal">Ready to stop guessing at link building?</h2>
+      <a href="#pricing" class="btn coral reveal">Book a free strategy call</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap fwrap">
+    <div>Chainmark — link building for teams who'd rather earn it.</div>
+    <div>hello@chainmark.example · © 2026 Chainmark</div>
+  </div>
+</footer>
+
+<script>
+const hdr = document.getElementById('hdr');
+window.addEventListener('scroll', ()=>{ hdr.classList.toggle('scrolled', window.scrollY > 10); }, {passive:true});
+
+const glow = document.getElementById('cursor-glow');
+if(matchMedia('(pointer:fine)').matches){
+  window.addEventListener('mousemove', e=>{
+    glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
+  }, {passive:true});
+} else { glow.style.display='none'; }
+
+try{
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:0.15});
+  els.forEach(el=>io.observe(el));
+}catch(e){ document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')); }
+
+try{
+  const counters = document.querySelectorAll('[data-count]');
+  const cio = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const el = en.target, target = +el.dataset.count, dur = 1400, start = performance.now();
+        function tick(now){
+          const p = Math.min((now-start)/dur, 1);
+          el.textContent = Math.floor(p*target).toLocaleString();
+          if(p<1) requestAnimationFrame(tick); else el.textContent = target.toLocaleString();
+        }
+        requestAnimationFrame(tick);
+        cio.unobserve(el);
+      }
+    });
+  }, {threshold:0.5});
+  counters.forEach(c=>cio.observe(c));
+}catch(e){}
+
+document.querySelectorAll('.tilt').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left)/r.width - 0.5, y = (e.clientY - r.top)/r.height - 0.5;
+    card.style.transform = `perspective(600px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', ()=>{ card.style.transform=''; });
+});
+</script>
+</body>
+</html>
