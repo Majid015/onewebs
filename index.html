@@ -326,51 +326,93 @@ footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:1
 </section>
 
 <footer>
+ <!-- Logo + Social Media Section -->
+<div class="social-section">
+
+  <!-- Logo -->
+  <div class="website-logo">
+    <a href="/" aria-label="Home">
+      <img src="images/logo.png" alt="Your Company Logo">
+    </a>
+  </div>
+
   <!-- Social Media Links -->
-<div class="social-links">
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-    LinkedIn
-  </a>
+  <div class="social-links">
 
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-    Facebook
-  </a>
+    <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+      LinkedIn
+    </a>
 
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-    Instagram
-  </a>
+    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+      Facebook
+    </a>
 
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
-    X
-  </a>
+    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+      Instagram
+    </a>
 
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-    YouTube
-  </a>
+    <a href="https://x.com/" target="_blank" rel="noopener noreferrer">
+      X
+    </a>
 
-  <a href="#" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-    TikTok
-  </a>
+    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+      YouTube
+    </a>
+
+    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">
+      TikTok
+    </a>
+
+    <a href="https://wa.me/" target="_blank" rel="noopener noreferrer">
+      WhatsApp
+    </a>
+
+  </div>
 </div>
 
+
 <style>
+.social-section {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+/* Logo */
+.website-logo img {
+  width: 180px;
+  height: auto;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+/* Social links */
 .social-links {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 15px;
   flex-wrap: wrap;
 }
 
 .social-links a {
+  display: inline-block;
+  padding: 10px 18px;
   color: #333;
+  background: #f5f5f5;
+  border-radius: 6px;
   text-decoration: none;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
 .social-links a:hover {
-  color: #0077b5;
+  color: #fff;
+  background: #0077b5;
+  transform: translateY(-2px);
 }
 </style>
+
   <div class="wrap fwrap">
     <div>Onewebs Kohtla Järve, Ida Viru County, Estonia 🇪🇪 </div>
     <div>hello@onewebs.co · © 2026 Onewebs</div>
