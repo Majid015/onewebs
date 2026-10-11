@@ -1,36 +1,196 @@
-# This is a basic workflow to help you get started with Actions
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign up – onewebs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7FB; --panel:#14213D; --panel-text:#F6F7FB; --card:#FFFFFF;
+  --text:#14213D; --muted:#5A6482; --line:#D5DAE8; --accent:#3B5BFF; --accent-text:#fff;
+  --err:#C62F4A; --ok:#1E8A5A; --sky:#DCE4FF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1426; --panel:#101A33; --panel-text:#F6F7FB; --card:#162040;
+    --text:#EEF1FA; --muted:#9AA5C6; --line:#2B3866; --accent:#6F88FF; --accent-text:#0D1426;
+    --err:#FF7A90; --ok:#4FD39A; --sky:#26356B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1426; --panel:#101A33; --panel-text:#F6F7FB; --card:#162040;
+  --text:#EEF1FA; --muted:#9AA5C6; --line:#2B3866; --accent:#6F88FF; --accent-text:#0D1426;
+  --err:#FF7A90; --ok:#4FD39A; --sky:#26356B;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5;min-height:100vh}
+.wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);min-height:100vh}
+.side{background:var(--panel);color:var(--panel-text);padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.logo{font-weight:800;font-size:1.4rem;letter-spacing:-.02em;text-decoration:none;color:inherit}
+.logo span{color:#8FA3FF}
+.side h1{font-size:clamp(2rem,3.6vw,3.1rem);line-height:1.08;letter-spacing:-.03em;font-weight:800;margin:0 0 16px;max-width:14ch}
+.side p{margin:0;max-width:38ch;color:#B9C3E3}
+.stack{position:relative;height:190px;max-width:360px}
+.win{position:absolute;left:0;right:0;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);height:130px}
+.win::before{content:"";position:absolute;left:14px;top:12px;width:34px;height:8px;border-radius:4px;background:rgba(255,255,255,.35)}
+.win:nth-child(1){top:0;transform:translateX(0)}
+.win:nth-child(2){top:28px;left:22px;right:-22px;background:rgba(255,255,255,.1)}
+.win:nth-child(3){top:56px;left:44px;right:-44px;background:var(--accent);border-color:transparent}
+.win:nth-child(3)::before{background:rgba(255,255,255,.7)}
+.win:nth-child(3)::after{content:"";position:absolute;left:14px;right:60px;top:44px;height:10px;border-radius:5px;background:rgba(255,255,255,.55);box-shadow:0 22px 0 rgba(255,255,255,.35)}
+.main{display:flex;align-items:center;justify-content:center;padding:48px 24px}
+.card{width:100%;max-width:420px}
+.card h2{font-size:1.9rem;letter-spacing:-.025em;line-height:1.15;margin:0 0 8px;font-weight:800}
+.sub{color:var(--muted);margin:0 0 28px}
+.sub a,.hint a,.terms a{color:var(--accent);font-weight:600}
+.field{margin-bottom:18px}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+.inp{position:relative}
+input[type=text],input[type=email],input[type=password]{width:100%;font:inherit;color:var(--text);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;transition:border-color .15s,box-shadow .15s}
+input:focus-visible,button:focus-visible,a:focus-visible,.toggle:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input:focus{border-color:var(--accent)}
+input[aria-invalid=true]{border-color:var(--err)}
+.toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font:inherit;font-size:.85rem;font-weight:600;padding:6px 8px;border-radius:6px;cursor:pointer}
+.msg{font-size:.85rem;margin:6px 0 0;min-height:1.2em;color:var(--err)}
+.meter{display:flex;gap:4px;margin-top:8px}
+.meter i{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .2s}
+.hint{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 6px}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.check label{font-weight:400;font-size:.9rem;margin:0;color:var(--muted)}
+.btn{width:100%;font:inherit;font-weight:700;font-size:1rem;background:var(--accent);color:var(--accent-text);border:0;border-radius:10px;padding:14px;margin-top:14px;cursor:pointer;transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.7;cursor:progress}
+.done{display:none;text-align:left}
+.done.show{display:block}
+.tick{width:52px;height:52px;border-radius:50%;background:var(--sky);display:grid;place-items:center;margin-bottom:20px}
+.tick svg{width:26px;height:26px;stroke:var(--ok);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.theme{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:16px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:999px;font:inherit;font-size:.8rem;font-weight:600;padding:6px 12px;cursor:pointer}
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .side{padding:28px 24px;gap:20px}
+  .stack{display:none}
+  .side h1{max-width:none;font-size:1.9rem}
+  .main{padding:32px 20px 48px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<button class="theme" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
+<div class="wrap">
+  <aside class="side">
+    <a class="logo" href="https://onewebs.co">one<span>webs</span></a>
+    <div>
+      <h1>Everything for your website, in one place.</h1>
+      <p>Create your free account and start building on onewebs in minutes.</p>
+    </div>
+    <div class="stack" aria-hidden="true"><div class="win"></div><div class="win"></div><div class="win"></div></div>
+  </aside>
 
-name: CI
+  <main class="main">
+    <div class="card">
+      <div id="formView">
+        <h2>Create your account</h2>
+        <p class="sub">Already have an account? <a href="https://onewebs.co/login">Log in</a></p>
+        <form id="f" novalidate>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" type="text" autocomplete="name" required>
+            <p class="msg" id="nameM" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input id="email" type="email" autocomplete="email" required>
+            <p class="msg" id="emailM" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="pw">Password</label>
+            <div class="inp">
+              <input id="pw" type="password" autocomplete="new-password" required aria-describedby="pwH">
+              <button class="toggle" type="button" id="tg" aria-label="Show password">Show</button>
+            </div>
+            <div class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <p class="hint" id="pwH">Use at least 8 characters with a number.</p>
+            <p class="msg" id="pwM" role="alert"></p>
+          </div>
+          <div class="check">
+            <input id="terms" type="checkbox">
+            <label for="terms" class="terms">I agree to the <a href="https://onewebs.co/terms">Terms of Service</a> and <a href="https://onewebs.co/privacy">Privacy Policy</a>.</label>
+          </div>
+          <p class="msg" id="termsM" role="alert"></p>
+          <button class="btn" id="go" type="submit">Create account</button>
+        </form>
+      </div>
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+      <div class="done" id="doneView" aria-live="polite">
+        <div class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2>Check your inbox</h2>
+        <p class="sub">We sent a confirmation link to <strong id="sentTo"></strong>. Open it to finish creating your account.</p>
+        <a href="https://onewebs.co" style="color:var(--accent);font-weight:600">Back to onewebs.co</a>
+      </div>
+    </div>
+  </main>
+</div>
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var pw=$('pw'), bars=document.querySelectorAll('.meter i');
+  var cols=['#C62F4A','#E08A1E','#C9B21A','#1E8A5A'];
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  $('tg').addEventListener('click',function(){
+    var show=pw.type==='password';
+    pw.type=show?'text':'password';
+    this.textContent=show?'Hide':'Show';
+    this.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+  pw.addEventListener('input',function(){
+    var v=pw.value,s=0;
+    if(v.length>=8)s++;
+    if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;
+    if(/\d/.test(v))s++;
+    if(/[^A-Za-z0-9]/.test(v)||v.length>=12)s++;
+    bars.forEach(function(b,i){b.style.background=i<s?cols[s-1]:''});
+  });
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+  function setErr(inp,msgId,text){
+    $(msgId).textContent=text||'';
+    if(inp)inp.setAttribute('aria-invalid',text?'true':'false');
+    return !text;
+  }
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+  $('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=$('name'),em=$('email'),t=$('terms');
+    var ok=true;
+    ok=setErr(n,'nameM',n.value.trim()?'':'Enter your full name.')&&ok;
+    ok=setErr(em,'emailM',/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.value.trim())?'':'Enter a valid email address, like name@example.com.')&&ok;
+    ok=setErr(pw,'pwM',(pw.value.length>=8&&/\d/.test(pw.value))?'':'Password must be at least 8 characters and include a number.')&&ok;
+    ok=setErr(null,'termsM',t.checked?'':'Accept the Terms of Service to continue.')&&ok;
+    if(!ok){var first=document.querySelector('[aria-invalid=true]');if(first)first.focus();return}
+
+    var btn=$('go');btn.disabled=true;btn.textContent='Creating account…';
+    // TODO: replace with a real request to your onewebs.co sign-up endpoint.
+    setTimeout(function(){
+      $('sentTo').textContent=em.value.trim();
+      $('formView').style.display='none';
+      $('doneView').classList.add('show');
+    },700);
+  });
+
+  var root=document.documentElement;
+  $('theme').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+})();
+</script>
+</body>
+</html>
