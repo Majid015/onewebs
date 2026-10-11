@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Onewebs — Link Building That Moves Rankings</title>
-  <a href="https://onewebs.co"></a>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -179,6 +178,50 @@ body.su-lock{overflow:hidden;}
 .nav-cta{display:flex; align-items:center; gap:22px;}
 .nav-login{font-size:14.5px; font-weight:600; color:var(--ink); transition:color .2s;}
 .nav-login:hover{color:var(--primary);}
+/* ---------- Log in popup ---------- */
+#li{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,31,.55); backdrop-filter:blur(6px); overflow-y:auto;}
+#li.open{display:flex;}
+#li .su-card{position:relative; width:100%; max-width:440px; margin:auto; background:#fff; border-radius:20px; padding:36px 32px; box-shadow:0 30px 60px rgba(20,18,31,.25); animation:suIn .25s ease;}
+#li .su-x{position:absolute; top:14px; right:14px; width:36px; height:36px; border:0; border-radius:50%; background:var(--card); color:var(--ink); font-size:20px; line-height:1; cursor:pointer;}
+#li .su-x:hover{background:var(--line);}
+#li h2{font-size:28px; margin-bottom:6px; max-width:none;}
+#li .su-sub{color:var(--dim); font-size:14.5px; margin-bottom:24px;}
+#li .su-sub a,#li .su-terms a{color:var(--primary); font-weight:600;}
+#li .su-field{margin-bottom:16px;}
+#li label{display:block; font-size:13.5px; font-weight:600; margin-bottom:6px;}
+#li .su-inp{position:relative;}
+#li input[type=text],#li input[type=email],#li input[type=password]{width:100%; font:inherit; font-size:15px; color:var(--ink); background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; transition:border-color .2s, box-shadow .2s;}
+#li input:focus{outline:none; border-color:var(--primary); background:#fff; box-shadow:0 0 0 4px rgba(61,59,243,.12);}
+#li input[aria-invalid=true]{border-color:#D6332F;}
+#li .su-tg{position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:0; font:inherit; font-size:13px; font-weight:600; color:var(--dim); padding:6px 8px; border-radius:6px; cursor:pointer;}
+#li .su-msg{font-size:13px; color:#D6332F; margin-top:5px;}
+#li .su-hint{font-size:12.5px; color:var(--dim); margin-top:6px;}
+#li .su-meter{display:flex; gap:4px; margin-top:8px;}
+#li .su-meter i{flex:1; height:4px; border-radius:2px; background:var(--line); transition:background .25s;}
+#li .su-check{display:flex; gap:10px; align-items:flex-start; margin:6px 0 2px;}
+#li .su-check input{width:18px; height:18px; margin-top:3px; accent-color:var(--primary); flex:none;}
+#li .su-check label{font-weight:400; font-size:13.5px; color:var(--dim); margin:0;}
+#li .su-go{width:100%; margin-top:16px; font:inherit; font-size:15px;}
+#li .su-go[disabled]{opacity:.7; cursor:progress; transform:none; box-shadow:none;}
+#li button:focus-visible,#li a:focus-visible,#li input:focus-visible{outline:3px solid var(--primary); outline-offset:2px;}
+#li .su-done{display:none;}
+#li .su-done.show{display:block;}
+#li .su-tick{width:54px; height:54px; border-radius:50%; background:var(--card); display:grid; place-items:center; margin-bottom:20px;}
+#li .su-tick svg{width:26px; height:26px; fill:none; stroke:var(--mint); stroke-width:3; stroke-linecap:round; stroke-linejoin:round;}
+@media (max-width:480px){ #li .su-card{padding:30px 20px;} }
+@media (prefers-reduced-motion:reduce){ #li .su-card{animation:none;} }
+
+.nav-cta{display:flex; align-items:center; gap:22px;}
+.nav-login{font-size:14.5px; font-weight:600; color:var(--ink); transition:color .2s;}
+.nav-login:hover{color:var(--primary);}
+
+#li .su-row{display:flex; justify-content:flex-end; margin:4px 0; font-size:13.5px;}
+#li .su-row a{color:var(--primary); font-weight:600;}
+#li .su-err{display:none; margin-top:14px; font-size:13.5px; color:#D6332F; background:#FDECEC; border-radius:10px; padding:10px 14px;}
+#li .su-err.show{display:block;}
+#li .su-err.ok{color:#0B7A5A; background:#E6F8F1;}
+#li .su-foot{text-align:center; font-size:14px; color:var(--dim); margin-top:22px;}
+#li .su-foot a{color:var(--primary); font-weight:600;}
 </style>
 </head>
 <body>
@@ -195,7 +238,7 @@ body.su-lock{overflow:hidden;}
       <a href="#faq">FAQ</a>
     </div>
     
-    <div class="nav-cta"><a href="login" class="nav-login">Log in</a><a href="signup" class="btn" data-open-signup>Get Started</a></div>  
+    <div class="nav-cta"><a href="login" class="nav-login" data-open-login>Log in</a><a href="signup" class="btn" data-open-signup>Get Started</a></div>  
   </nav></div>  
 </header>
 
@@ -368,7 +411,7 @@ body.su-lock{overflow:hidden;}
 
 <footer>
  
-</style> <!-- Social Media Links -->
+<!-- Social Media Links -->
   <div class="social-links">
 
     <a href="https://www.linkedin.com/company/onewebs-network/" target="_blank" rel="noopener noreferrer">
@@ -391,7 +434,6 @@ body.su-lock{overflow:hidden;}
       YouTube
     </a>
   </div>
-</div>
 
 
 <style>
@@ -490,12 +532,14 @@ document.querySelectorAll('.tilt').forEach(card=>{
 });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/auth.js"></script>
 <div id="su" role="dialog" aria-modal="true" aria-labelledby="su-title" aria-hidden="true">
   <div class="su-card">
     <button class="su-x" type="button" id="su-close" aria-label="Close sign up">&times;</button>
     <div id="su-formView">
       <h2 id="su-title">Create your account</h2>
-      <p class="su-sub">Already have an account? <a href="/login">Log in</a></p>
+      <p class="su-sub">Already have an account? <a href="/login" data-open-login>Log in</a></p>
       <form id="su-f" novalidate>
         <div class="su-field">
           <label for="su-name">Full name</label>
@@ -601,14 +645,136 @@ document.querySelectorAll('.tilt').forEach(card=>{
     if(!ok){var first=modal.querySelector('[aria-invalid=true]');if(first)first.focus();return}
 
     var btn=$('su-go'); btn.disabled=true; btn.textContent='Creating account…';
-    // TODO: replace this timer with a real request to your sign-up service.
-    setTimeout(function(){
+    OneAuth.signUp({name:n.value.trim(),email:em.value.trim(),password:pw.value}).then(function(r){
+      if(r.error){ btn.disabled=false; btn.textContent='Create account'; setErr(null,'su-termsM',r.error); return; }
       $('su-sentTo').textContent=em.value.trim();
       $('su-formView').style.display='none';
       $('su-doneView').classList.add('show');
-    },700);
+    });
   });
 })();
+</script>
+
+<div id="li" role="dialog" aria-modal="true" aria-labelledby="li-title" aria-hidden="true">
+  <div class="su-card">
+    <button class="su-x" type="button" id="li-close" aria-label="Close log in">&times;</button>
+    <h2 id="li-title">Log in to Onewebs</h2>
+    <p class="su-sub">Check your backlink reports and message our team.</p>
+    <form id="li-f" novalidate>
+      <div class="su-field">
+        <label for="li-email">Email address</label>
+        <input id="li-email" type="email" autocomplete="email" required>
+        <p class="su-msg" id="li-emailM" role="alert"></p>
+      </div>
+      <div class="su-field">
+        <label for="li-pw">Password</label>
+        <div class="su-inp">
+          <input id="li-pw" type="password" autocomplete="current-password" required>
+          <button class="su-tg" type="button" id="li-tg" aria-label="Show password">Show</button>
+        </div>
+        <p class="su-msg" id="li-pwM" role="alert"></p>
+      </div>
+      <div class="su-row"><a href="#" id="li-forgot">Forgot password?</a></div>
+      <button class="btn coral su-go" id="li-go" type="submit">Log in</button>
+      <p class="su-err" id="li-err" role="alert"></p>
+    </form>
+    <p class="su-foot">New to Onewebs? <a href="/signup" id="li-new">Create an account</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var modal=$('li'), pw=$('li-pw'), lastFocus=null;
+
+  function openLi(e){
+    if(this && this.getAttribute && this.getAttribute('data-open-login')===null) return; // link was switched to "Dashboard"
+    if(e)e.preventDefault();
+    var su=$('su'); if(su&&su.classList.contains('open')) $('su-close').click();
+    lastFocus=document.activeElement;
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('su-lock');
+    setTimeout(function(){$('li-email').focus();},50);
+  }
+  function closeLi(){
+    modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('su-lock');
+    if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  }
+  document.querySelectorAll('[data-open-login]').forEach(function(b){b.addEventListener('click',openLi)});
+  $('li-close').addEventListener('click',closeLi);
+  modal.addEventListener('mousedown',function(e){if(e.target===modal)closeLi();});
+  $('li-new').addEventListener('click',function(e){
+    e.preventDefault(); closeLi();
+    var b=document.querySelector('[data-open-signup]'); if(b)b.click();
+  });
+  document.addEventListener('keydown',function(e){
+    if(!modal.classList.contains('open'))return;
+    if(e.key==='Escape'){closeLi();return;}
+    if(e.key==='Tab'){
+      var f=Array.prototype.filter.call(modal.querySelectorAll('a[href],button:not([disabled]),input'),function(x){return x.offsetParent!==null});
+      if(!f.length)return;
+      var first=f[0], last=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  });
+
+  $('li-tg').addEventListener('click',function(){
+    var show=pw.type==='password';
+    pw.type=show?'text':'password';
+    this.textContent=show?'Hide':'Show';
+    this.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+
+  function setErr(inp,id,text){
+    $(id).textContent=text||'';
+    inp.setAttribute('aria-invalid',text?'true':'false');
+    return !text;
+  }
+  var EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  $('li-forgot').addEventListener('click',function(e){
+    e.preventDefault();
+    var em=$('li-email'), fe=$('li-err'), addr=em.value.trim();
+    fe.className='su-err';
+    if(!EMAIL.test(addr)){
+      setErr(em,'li-emailM','Enter your email address above, then select Forgot password.'); em.focus(); return;
+    }
+    setErr(em,'li-emailM','');
+    OneAuth.resetPassword(addr).then(function(r){
+      fe.textContent=r.error||('If an account exists for '+addr+', we sent a link to reset your password.');
+      fe.className='su-err show'+(r.error?'':' ok');
+    });
+  });
+
+  $('li-f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var em=$('li-email'), ok=true, fe=$('li-err');
+    fe.className='su-err';
+    ok=setErr(em,'li-emailM',EMAIL.test(em.value.trim())?'':'Enter a valid email address, like name@example.com.')&&ok;
+    ok=setErr(pw,'li-pwM',pw.value?'':'Enter your password.')&&ok;
+    if(!ok){var first=modal.querySelector('[aria-invalid=true]');if(first)first.focus();return}
+
+    var btn=$('li-go'); btn.disabled=true; btn.textContent='Logging in…';
+    OneAuth.signIn(em.value.trim(),pw.value).then(function(r){
+      if(r.error){
+        btn.disabled=false; btn.textContent='Log in';
+        fe.className='su-err show'; fe.textContent=r.error;
+        return;
+      }
+      window.location.href='/dashboard';
+    });
+  });
+})();
+</script>
+
+<script>
+OneAuth.getUser().then(function(u){
+  if(!u) return;
+  var a=document.querySelector('.nav-login'); if(!a) return;
+  a.textContent='Dashboard'; a.href='/dashboard';
+});
 </script>
 </body>
 </html>
