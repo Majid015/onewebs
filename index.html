@@ -140,6 +140,41 @@ nav .links a:hover{color:var(--ink);}
 
 footer{padding:48px 0; font-size:13px; color:var(--dim);}
 footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;}
+
+/* ---------- Sign up popup ---------- */
+#su{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,31,.55); backdrop-filter:blur(6px); overflow-y:auto;}
+#su.open{display:flex;}
+body.su-lock{overflow:hidden;}
+#su .su-card{position:relative; width:100%; max-width:440px; margin:auto; background:#fff; border-radius:20px; padding:36px 32px; box-shadow:0 30px 60px rgba(20,18,31,.25); animation:suIn .25s ease;}
+@keyframes suIn{from{opacity:0; transform:translateY(16px) scale(.98)} to{opacity:1; transform:none}}
+#su .su-x{position:absolute; top:14px; right:14px; width:36px; height:36px; border:0; border-radius:50%; background:var(--card); color:var(--ink); font-size:20px; line-height:1; cursor:pointer;}
+#su .su-x:hover{background:var(--line);}
+#su h2{font-size:28px; margin-bottom:6px; max-width:none;}
+#su .su-sub{color:var(--dim); font-size:14.5px; margin-bottom:24px;}
+#su .su-sub a,#su .su-terms a{color:var(--primary); font-weight:600;}
+#su .su-field{margin-bottom:16px;}
+#su label{display:block; font-size:13.5px; font-weight:600; margin-bottom:6px;}
+#su .su-inp{position:relative;}
+#su input[type=text],#su input[type=email],#su input[type=password]{width:100%; font:inherit; font-size:15px; color:var(--ink); background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; transition:border-color .2s, box-shadow .2s;}
+#su input:focus{outline:none; border-color:var(--primary); background:#fff; box-shadow:0 0 0 4px rgba(61,59,243,.12);}
+#su input[aria-invalid=true]{border-color:#D6332F;}
+#su .su-tg{position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:0; font:inherit; font-size:13px; font-weight:600; color:var(--dim); padding:6px 8px; border-radius:6px; cursor:pointer;}
+#su .su-msg{font-size:13px; color:#D6332F; margin-top:5px;}
+#su .su-hint{font-size:12.5px; color:var(--dim); margin-top:6px;}
+#su .su-meter{display:flex; gap:4px; margin-top:8px;}
+#su .su-meter i{flex:1; height:4px; border-radius:2px; background:var(--line); transition:background .25s;}
+#su .su-check{display:flex; gap:10px; align-items:flex-start; margin:6px 0 2px;}
+#su .su-check input{width:18px; height:18px; margin-top:3px; accent-color:var(--primary); flex:none;}
+#su .su-check label{font-weight:400; font-size:13.5px; color:var(--dim); margin:0;}
+#su .su-go{width:100%; margin-top:16px; font:inherit; font-size:15px;}
+#su .su-go[disabled]{opacity:.7; cursor:progress; transform:none; box-shadow:none;}
+#su button:focus-visible,#su a:focus-visible,#su input:focus-visible{outline:3px solid var(--primary); outline-offset:2px;}
+#su .su-done{display:none;}
+#su .su-done.show{display:block;}
+#su .su-tick{width:54px; height:54px; border-radius:50%; background:var(--card); display:grid; place-items:center; margin-bottom:20px;}
+#su .su-tick svg{width:26px; height:26px; fill:none; stroke:var(--mint); stroke-width:3; stroke-linecap:round; stroke-linejoin:round;}
+@media (max-width:480px){ #su .su-card{padding:30px 20px;} }
+@media (prefers-reduced-motion:reduce){ #su .su-card{animation:none;} }
 </style>
 </head>
 <body>
@@ -156,7 +191,7 @@ footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:1
       <a href="#faq">FAQ</a>
     </div>
     
-    <a href="signup" class="btn">Get Started</a>  
+    <a href="signup" class="btn" data-open-signup>Get Started</a>  
   </nav></div>  
 </header>
 
@@ -449,6 +484,127 @@ document.querySelectorAll('.tilt').forEach(card=>{
   });
   card.addEventListener('mouseleave', ()=>{ card.style.transform=''; });
 });
+</script>
+
+<div id="su" role="dialog" aria-modal="true" aria-labelledby="su-title" aria-hidden="true">
+  <div class="su-card">
+    <button class="su-x" type="button" id="su-close" aria-label="Close sign up">&times;</button>
+    <div id="su-formView">
+      <h2 id="su-title">Create your account</h2>
+      <p class="su-sub">Already have an account? <a href="https://onewebs.co/login">Log in</a></p>
+      <form id="su-f" novalidate>
+        <div class="su-field">
+          <label for="su-name">Full name</label>
+          <input id="su-name" type="text" autocomplete="name" required>
+          <p class="su-msg" id="su-nameM" role="alert"></p>
+        </div>
+        <div class="su-field">
+          <label for="su-email">Email address</label>
+          <input id="su-email" type="email" autocomplete="email" required>
+          <p class="su-msg" id="su-emailM" role="alert"></p>
+        </div>
+        <div class="su-field">
+          <label for="su-pw">Password</label>
+          <div class="su-inp">
+            <input id="su-pw" type="password" autocomplete="new-password" required aria-describedby="su-pwH">
+            <button class="su-tg" type="button" id="su-tg" aria-label="Show password">Show</button>
+          </div>
+          <div class="su-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="su-hint" id="su-pwH">Use at least 8 characters with a number.</p>
+          <p class="su-msg" id="su-pwM" role="alert"></p>
+        </div>
+        <div class="su-check">
+          <input id="su-terms" type="checkbox">
+          <label for="su-terms" class="su-terms">I agree to the <a href="https://onewebs.co/terms">Terms of Service</a> and <a href="https://onewebs.co/privacy">Privacy Policy</a>.</label>
+        </div>
+        <p class="su-msg" id="su-termsM" role="alert"></p>
+        <button class="btn coral su-go" id="su-go" type="submit">Create account</button>
+      </form>
+    </div>
+    <div class="su-done" id="su-doneView" aria-live="polite">
+      <div class="su-tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>Check your inbox</h2>
+      <p class="su-sub" style="margin-top:8px">We sent a confirmation link to <strong id="su-sentTo"></strong>. Open it to finish creating your account.</p>
+      <a href="#" id="su-back" style="color:var(--primary);font-weight:600">Back to onewebs.co</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var modal=$('su'), pw=$('su-pw'), bars=document.querySelectorAll('.su-meter i'), lastFocus=null;
+  var cols=['#D6332F','#E08A1E','#C9B21A','#00A87D'];
+
+  function openSu(e){
+    if(e)e.preventDefault();
+    lastFocus=document.activeElement;
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('su-lock');
+    setTimeout(function(){var f=$('su-name'); if(f&&$('su-formView').style.display!=='none')f.focus();},50);
+  }
+  function closeSu(){
+    modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('su-lock');
+    if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  }
+  document.querySelectorAll('[data-open-signup]').forEach(function(b){b.addEventListener('click',openSu)});
+  $('su-close').addEventListener('click',closeSu);
+  $('su-back').addEventListener('click',function(e){e.preventDefault();closeSu();});
+  modal.addEventListener('mousedown',function(e){if(e.target===modal)closeSu();});
+  document.addEventListener('keydown',function(e){
+    if(!modal.classList.contains('open'))return;
+    if(e.key==='Escape'){closeSu();return;}
+    if(e.key==='Tab'){
+      var f=modal.querySelectorAll('a[href],button:not([disabled]),input');
+      f=Array.prototype.filter.call(f,function(x){return x.offsetParent!==null});
+      if(!f.length)return;
+      var first=f[0], last=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  });
+
+  $('su-tg').addEventListener('click',function(){
+    var show=pw.type==='password';
+    pw.type=show?'text':'password';
+    this.textContent=show?'Hide':'Show';
+    this.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+
+  pw.addEventListener('input',function(){
+    var v=pw.value,s=0;
+    if(v.length>=8)s++;
+    if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;
+    if(/\d/.test(v))s++;
+    if(/[^A-Za-z0-9]/.test(v)||v.length>=12)s++;
+    bars.forEach(function(b,i){b.style.background=i<s?cols[s-1]:''});
+  });
+
+  function setErr(inp,id,text){
+    $(id).textContent=text||'';
+    if(inp)inp.setAttribute('aria-invalid',text?'true':'false');
+    return !text;
+  }
+
+  $('su-f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=$('su-name'),em=$('su-email'),t=$('su-terms'),ok=true;
+    ok=setErr(n,'su-nameM',n.value.trim()?'':'Enter your full name.')&&ok;
+    ok=setErr(em,'su-emailM',/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.value.trim())?'':'Enter a valid email address, like name@example.com.')&&ok;
+    ok=setErr(pw,'su-pwM',(pw.value.length>=8&&/\d/.test(pw.value))?'':'Password must be at least 8 characters and include a number.')&&ok;
+    ok=setErr(null,'su-termsM',t.checked?'':'Accept the Terms of Service to continue.')&&ok;
+    if(!ok){var first=modal.querySelector('[aria-invalid=true]');if(first)first.focus();return}
+
+    var btn=$('su-go'); btn.disabled=true; btn.textContent='Creating account…';
+    // TODO: replace this timer with a real request to your sign-up service.
+    setTimeout(function(){
+      $('su-sentTo').textContent=em.value.trim();
+      $('su-formView').style.display='none';
+      $('su-doneView').classList.add('show');
+    },700);
+  });
+})();
 </script>
 </body>
 </html>
