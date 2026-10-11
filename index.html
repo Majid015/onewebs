@@ -175,6 +175,10 @@ body.su-lock{overflow:hidden;}
 #su .su-tick svg{width:26px; height:26px; fill:none; stroke:var(--mint); stroke-width:3; stroke-linecap:round; stroke-linejoin:round;}
 @media (max-width:480px){ #su .su-card{padding:30px 20px;} }
 @media (prefers-reduced-motion:reduce){ #su .su-card{animation:none;} }
+
+.nav-cta{display:flex; align-items:center; gap:22px;}
+.nav-login{font-size:14.5px; font-weight:600; color:var(--ink); transition:color .2s;}
+.nav-login:hover{color:var(--primary);}
 </style>
 </head>
 <body>
@@ -191,7 +195,7 @@ body.su-lock{overflow:hidden;}
       <a href="#faq">FAQ</a>
     </div>
     
-    <a href="signup" class="btn" data-open-signup>Get Started</a>  
+    <div class="nav-cta"><a href="login" class="nav-login">Log in</a><a href="signup" class="btn" data-open-signup>Get Started</a></div>  
   </nav></div>  
 </header>
 
@@ -491,7 +495,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
     <button class="su-x" type="button" id="su-close" aria-label="Close sign up">&times;</button>
     <div id="su-formView">
       <h2 id="su-title">Create your account</h2>
-      <p class="su-sub">Already have an account? <a href="https://onewebs.co/login">Log in</a></p>
+      <p class="su-sub">Already have an account? <a href="/login">Log in</a></p>
       <form id="su-f" novalidate>
         <div class="su-field">
           <label for="su-name">Full name</label>
