@@ -154,7 +154,6 @@ footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:1
 .dp-note{display:none; margin-top:16px; font-size:13.5px; border-radius:10px; padding:10px 14px;}
 .dp-note.show{display:block;}
 .dp-note.err{color:#D6332F; background:#FDECEC;}
-.dp-note.demo{color:#8A5A00; background:#FFF4DB;}
 .dp-res{margin-top:24px; overflow-x:auto; display:none;}
 .dp-res.show{display:block;}
 .dp-res table{width:100%; border-collapse:collapse; background:#fff; border-radius:14px; overflow:hidden; min-width:520px;}
@@ -353,7 +352,7 @@ body.su-lock{overflow:hidden;}
 <section id="checker">
   <div class="wrap">
     <div class="label reveal">Free tool</div>
-    <h2 class="reveal">Free Domain & Page Authority Checker</h2>
+    <h2 class="reveal">Check any website’s DA &amp; PA.</h2>
     <p class="dp-sub reveal">Paste up to 10 domains or URLs, one per line, and see their Domain Authority and Page Authority in seconds.</p>
     <div class="dp-box reveal">
       <label for="dp-in">Domains or URLs</label>
@@ -362,7 +361,6 @@ body.su-lock{overflow:hidden;}
         <button class="btn coral" id="dp-go" type="button">Check DA &amp; PA</button>
         <span class="dp-hint">Scores range from 1 to 100. Higher means stronger.</span>
       </div>
-    <p class="dp-note demo" id="dp-demo">Preview mode: these numbers are sample data, not real scores. Connect your endpoint before going live.</p>
       <p class="dp-note err" id="dp-err" role="alert"></p>
     </div>
     <div class="dp-res" id="dp-res">
@@ -600,7 +598,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   var DEMO = true;
 
   var $ = function(id){return document.getElementById(id)};
-  var go=$('dp-go'), input=$('dp-in'), body=$('dp-body'), res=$('dp-res'), err=$('dp-err'), demo=$('dp-demo'), cta=$('dp-cta');
+  var go=$('dp-go'), input=$('dp-in'), body=$('dp-body'), res=$('dp-res'), err=$('dp-err'), cta=$('dp-cta');
 
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function clean(line){
@@ -625,7 +623,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   function fail(m){err.textContent=m; err.classList.add('show');}
 
   go.addEventListener('click',function(){
-    err.classList.remove('show'); demo.classList.remove('show');
+    err.classList.remove('show');
     var targets=[], seen={};
     input.value.split(/\r?\n/).forEach(function(l){var c=clean(l); if(c&&!seen[c]){seen[c]=1;targets.push(c);}});
     if(!targets.length) return fail('Enter at least one valid domain, like example.com.');
@@ -636,7 +634,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
 
     if(!ENDPOINT){
       if(!DEMO){ done(); return fail('This tool isn’t connected yet. Please try again later.'); }
-      setTimeout(function(){ render(targets.map(sample)); demo.classList.add('show'); done(); },600);
+      setTimeout(function(){ render(targets.map(sample)); done(); },600);
       return;
     }
     fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:targets})})
