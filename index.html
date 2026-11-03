@@ -171,6 +171,15 @@ footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:1
 .dp-cta h3{font-size:19px;}
 .dp-cta p{color:#C9C7F5; font-size:14px; margin-top:4px;}
 
+
+/* ---------- Organic traffic checker ---------- */
+#traffic{padding:100px 0;}
+#traffic h2{max-width:620px;}
+.ot-sel{font:inherit; font-size:14.5px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:11px 12px;}
+.ot-num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px;}
+.ot-inp{width:100%; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px;}
+.ot-inp:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(61,59,243,.12);}
+
 /* ---------- Sign up popup ---------- */
 #su{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,31,.55); backdrop-filter:blur(6px); overflow-y:auto;}
 #su.open{display:flex;}
@@ -262,6 +271,7 @@ body.su-lock{overflow:hidden;}
       <a href="#services">Services</a>
       <a href="#cases">Results</a>
       <a href="#checker">DA &amp; PA Checker</a>
+      <a href="#traffic">Traffic Checker</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -352,7 +362,7 @@ body.su-lock{overflow:hidden;}
 <section id="checker">
   <div class="wrap">
     <div class="label reveal">Free tool</div>
-    <h2 class="reveal">Domain & Page Authority Scores Checker.</h2>
+    <h2 class="reveal">Check any website’s DA &amp; PA.</h2>
     <p class="dp-sub reveal">Paste up to 10 domains or URLs, one per line, and see their Domain Authority and Page Authority in seconds.</p>
     <div class="dp-box reveal">
       <label for="dp-in">Domains or URLs</label>
@@ -376,6 +386,46 @@ body.su-lock{overflow:hidden;}
   </div>
 </section>
 <!-- ===== END DA/PA CHECKER SECTION ===== -->
+
+<!-- ===== ORGANIC TRAFFIC CHECKER SECTION ===== -->
+<section id="traffic">
+  <div class="wrap">
+    <div class="label reveal">Free tool</div>
+    <h2 class="reveal">Check any website’s organic traffic.</h2>
+    <p class="dp-sub reveal">Enter a domain and see its estimated monthly organic search traffic and ranking keywords.</p>
+    <div class="dp-box reveal">
+      <label for="ot-in">Domain</label>
+      <input id="ot-in" class="ot-inp" type="text" placeholder="example.com" autocomplete="off" inputmode="url">
+      <div class="dp-row">
+        <select class="ot-sel" id="ot-db" aria-label="Country">
+          <option value="us">United States</option>
+          <option value="uk">United Kingdom</option>
+          <option value="ca">Canada</option>
+          <option value="au">Australia</option>
+          <option value="de">Germany</option>
+          <option value="fr">France</option>
+          <option value="es">Spain</option>
+          <option value="it">Italy</option>
+          <option value="in">India</option>
+        </select>
+        <button class="btn coral" id="ot-go" type="button">Check traffic</button>
+        <span class="dp-hint">Traffic is an estimate based on keyword rankings.</span>
+      </div>
+      <p class="dp-note err" id="ot-err" role="alert"></p>
+    </div>
+    <div class="dp-res" id="ot-res">
+      <table>
+        <thead><tr><th>Domain</th><th>Est. monthly organic traffic</th><th>Organic keywords</th></tr></thead>
+        <tbody id="ot-body"></tbody>
+      </table>
+    </div>
+    <div class="dp-cta" id="ot-cta">
+      <div><h3>Want more organic traffic?</h3><p>Our links help you rank for the keywords that bring it.</p></div>
+      <a href="#pricing" class="btn coral">Get a free link audit</a>
+    </div>
+  </div>
+</section>
+<!-- ===== END ORGANIC TRAFFIC CHECKER SECTION ===== -->
 
 <section id="pricing">
   <div class="wrap">
@@ -594,8 +644,8 @@ document.querySelectorAll('.tilt').forEach(card=>{
 (function(){
   // 1) After deploying worker.js, put its URL here, e.g. "https://da-pa.yourname.workers.dev"
   var ENDPOINT = "";
-  // 2) Sample numbers for previewing only. Set to false before publishing.
-  var DEMO = true;
+  // 2) Keep false on a live site. Set true only to preview the layout with sample (not real) numbers.
+  var DEMO = false;
 
   var $ = function(id){return document.getElementById(id)};
   var go=$('dp-go'), input=$('dp-in'), body=$('dp-body'), res=$('dp-res'), err=$('dp-err'), cta=$('dp-cta');
@@ -653,6 +703,69 @@ document.querySelectorAll('.tilt').forEach(card=>{
 })();
 </script>
 <!-- ===== END DA/PA CHECKER SCRIPT ===== -->
+
+<!-- ===== ORGANIC TRAFFIC CHECKER SCRIPT ===== -->
+<script>
+(function(){
+  // 1) After deploying worker-traffic.js, put its URL here.
+  var ENDPOINT = "";
+  // 2) Sample numbers for previewing only (always labelled on the page). Set to false before publishing.
+  var DEMO = true;
+
+  var $ = function(id){return document.getElementById(id)};
+  var go=$('ot-go'), input=$('ot-in'), db=$('ot-db'), body=$('ot-body'), res=$('ot-res'), err=$('ot-err'), cta=$('ot-cta');
+  var fmt=function(n){return Number(n).toLocaleString('en-US')};
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function clean(line){
+    var v=line.trim(); if(!v) return null;
+    if(!/^https?:\/\//i.test(v)) v='https://'+v;
+    try{ var u=new URL(v); if(u.hostname.indexOf('.')<1) return null; return u.hostname.replace(/^www\./,''); }catch(e){ return null; }
+  }
+  function sample(t){
+    var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0;
+    var tr=Math.round(Math.pow(10, 2+(h%400)/100));
+    return {url:t,traffic:tr,keywords:Math.round(tr/(1.5+(h%30)/10))};
+  }
+  function render(rows,isDemo){
+    body.innerHTML=rows.map(function(r){
+      if(r.error) return '<tr><td class="dp-url">'+esc(r.url)+'</td><td colspan="2" class="dp-err">'+esc(r.error)+'</td></tr>';
+      return '<tr><td class="dp-url">'+esc(r.url)+'</td><td class="ot-num">'+fmt(r.traffic)+'</td><td class="ot-num">'+fmt(r.keywords)+'</td></tr>';
+    }).join('');
+    res.classList.add('show'); cta.classList.add('show');
+  }
+  function fail(m){err.textContent=m; err.classList.add('show');}
+
+  go.addEventListener('click',function(){
+    err.classList.remove('show');
+    var c=clean(input.value.split(/\r?\n/)[0]);
+    if(!c) return fail('Enter a valid domain, like example.com.');
+    var targets=[c];
+
+    go.disabled=true; go.textContent='Checking…';
+    var done=function(){go.disabled=false; go.textContent='Check traffic';};
+
+    if(!ENDPOINT){
+      if(!DEMO){ done(); return fail('This tool isn’t connected yet. Please try again later.'); }
+      setTimeout(function(){ render(targets.map(sample),true); done(); },600);
+      return;
+    }
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:targets,database:db.value})})
+      .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+      .then(function(d){
+        render(targets.map(function(t,i){
+          var m=d.results&&d.results[i];
+          if(!m||m.traffic==null) return {url:t,error:'No data found for this domain.'};
+          return {url:t,traffic:m.traffic,keywords:m.keywords};
+        }),false);
+      })
+      .catch(function(){ fail('Something went wrong. Please try again in a moment.'); })
+      .then(done);
+  });
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+})();
+</script>
+<!-- ===== END ORGANIC TRAFFIC CHECKER SCRIPT ===== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/auth.js"></script>
