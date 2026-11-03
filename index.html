@@ -41,6 +41,7 @@ nav .links a:hover{color:var(--ink);}
 .btn:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(61,59,243,0.35);}
 .btn.coral{background:var(--coral);}
 .btn.coral:hover{box-shadow:0 10px 24px rgba(255,92,57,0.35);}
+.btn[disabled]{opacity:.7; cursor:progress; transform:none; box-shadow:none;}
 .btn-ghost{border:1.5px solid var(--line); padding:12px 22px; border-radius:10px; font-weight:600; font-size:14.5px; transition:border-color .2s, transform .2s;}
 .btn-ghost:hover{border-color:var(--ink); transform:translateY(-3px);}
 @media (max-width:760px){ nav .links{display:none;} }
@@ -140,6 +141,37 @@ nav .links a:hover{color:var(--ink);}
 footer{padding:48px 0; font-size:13px; color:var(--dim);}
 footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;}
 
+/* ---------- DA/PA checker ---------- */
+#checker{padding:100px 0;}
+#checker h2{max-width:620px;}
+#checker .dp-sub{color:var(--dim); max-width:560px; margin-top:14px;}
+.dp-box{margin-top:36px; background:var(--card); border-radius:20px; padding:28px;}
+.dp-box label{display:block; font-size:13.5px; font-weight:600; margin-bottom:8px;}
+.dp-box textarea{width:100%; min-height:110px; resize:vertical; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px;}
+.dp-box textarea:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(61,59,243,.12);}
+.dp-row{display:flex; gap:14px; align-items:center; margin-top:16px; flex-wrap:wrap;}
+.dp-hint{font-size:12.5px; color:var(--dim);}
+.dp-note{display:none; margin-top:16px; font-size:13.5px; border-radius:10px; padding:10px 14px;}
+.dp-note.show{display:block;}
+.dp-note.err{color:#D6332F; background:#FDECEC;}
+.dp-note.demo{color:#8A5A00; background:#FFF4DB;}
+.dp-res{margin-top:24px; overflow-x:auto; display:none;}
+.dp-res.show{display:block;}
+.dp-res table{width:100%; border-collapse:collapse; background:#fff; border-radius:14px; overflow:hidden; min-width:520px;}
+.dp-res th{text-align:left; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--dim); padding:14px 16px; border-bottom:1px solid var(--line);}
+.dp-res td{padding:14px 16px; border-bottom:1px solid var(--line); font-size:15px;}
+.dp-res tr:last-child td{border-bottom:none;}
+.dp-url{font-weight:600; word-break:break-all;}
+.dp-score{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px;}
+.dp-bar{flex:1; max-width:90px; height:6px; border-radius:3px; background:var(--line); overflow:hidden;}
+.dp-bar i{display:block; height:100%; border-radius:3px; background:var(--primary);}
+.dp-bar.pa i{background:var(--mint);}
+.dp-err{color:#D6332F; font-size:13.5px;}
+.dp-cta{margin-top:24px; display:none; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:var(--ink); color:#fff; border-radius:16px; padding:22px 26px;}
+.dp-cta.show{display:flex;}
+.dp-cta h3{font-size:19px;}
+.dp-cta p{color:#C9C7F5; font-size:14px; margin-top:4px;}
+
 /* ---------- Sign up popup ---------- */
 #su{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,31,.55); backdrop-filter:blur(6px); overflow-y:auto;}
 #su.open{display:flex;}
@@ -211,10 +243,6 @@ body.su-lock{overflow:hidden;}
 @media (max-width:480px){ #li .su-card{padding:30px 20px;} }
 @media (prefers-reduced-motion:reduce){ #li .su-card{animation:none;} }
 
-.nav-cta{display:flex; align-items:center; gap:22px;}
-.nav-login{font-size:14.5px; font-weight:600; color:var(--ink); transition:color .2s;}
-.nav-login:hover{color:var(--primary);}
-
 #li .su-row{display:flex; justify-content:flex-end; margin:4px 0; font-size:13.5px;}
 #li .su-row a{color:var(--primary); font-weight:600;}
 #li .su-err{display:none; margin-top:14px; font-size:13.5px; color:#D6332F; background:#FDECEC; border-radius:10px; padding:10px 14px;}
@@ -234,6 +262,7 @@ body.su-lock{overflow:hidden;}
       <a href="#process">Process</a>
       <a href="#services">Services</a>
       <a href="#cases">Results</a>
+      <a href="#checker">DA &amp; PA Checker</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -319,6 +348,36 @@ body.su-lock{overflow:hidden;}
     </div>
   </div>
 </section>
+
+<!-- ===== DA/PA CHECKER SECTION ===== -->
+<section id="checker">
+  <div class="wrap">
+    <div class="label reveal">Free tool</div>
+    <h2 class="reveal">Check any website’s DA &amp; PA.</h2>
+    <p class="dp-sub reveal">Paste up to 10 domains or URLs, one per line, and see their Domain Authority and Page Authority in seconds.</p>
+    <div class="dp-box reveal">
+      <label for="dp-in">Domains or URLs</label>
+      <textarea id="dp-in" placeholder="example.com&#10;https://another-site.com/blog/post"></textarea>
+      <div class="dp-row">
+        <button class="btn coral" id="dp-go" type="button">Check DA &amp; PA</button>
+        <span class="dp-hint">Scores range from 1 to 100. Higher means stronger.</span>
+      </div>
+      <p class="dp-note demo" id="dp-demo">Preview mode: these numbers are sample data, not real scores. Connect your endpoint before going live.</p>
+      <p class="dp-note err" id="dp-err" role="alert"></p>
+    </div>
+    <div class="dp-res" id="dp-res">
+      <table>
+        <thead><tr><th>URL</th><th>Domain Authority</th><th>Page Authority</th></tr></thead>
+        <tbody id="dp-body"></tbody>
+      </table>
+    </div>
+    <div class="dp-cta" id="dp-cta">
+      <div><h3>Want higher scores?</h3><p>We build the links that move DA and rankings.</p></div>
+      <a href="#pricing" class="btn coral">Get a free link audit</a>
+    </div>
+  </div>
+</section>
+<!-- ===== END DA/PA CHECKER SECTION ===== -->
 
 <section id="pricing">
   <div class="wrap">
@@ -531,6 +590,71 @@ document.querySelectorAll('.tilt').forEach(card=>{
   card.addEventListener('mouseleave', ()=>{ card.style.transform=''; });
 });
 </script>
+
+<!-- ===== DA/PA CHECKER SCRIPT ===== -->
+<script>
+(function(){
+  // 1) After deploying worker.js, put its URL here, e.g. "https://da-pa.yourname.workers.dev"
+  var ENDPOINT = "";
+  // 2) Sample numbers for previewing only. Set to false before publishing.
+  var DEMO = true;
+
+  var $ = function(id){return document.getElementById(id)};
+  var go=$('dp-go'), input=$('dp-in'), body=$('dp-body'), res=$('dp-res'), err=$('dp-err'), demo=$('dp-demo'), cta=$('dp-cta');
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function clean(line){
+    var v=line.trim(); if(!v) return null;
+    if(!/^https?:\/\//i.test(v)) v='https://'+v;
+    try{ var u=new URL(v); if(u.hostname.indexOf('.')<1) return null; return u.hostname.replace(/^www\./,'')+(u.pathname.length>1?u.pathname:''); }catch(e){ return null; }
+  }
+  function sample(t){
+    var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0;
+    var host=t.split('/')[0], hh=0; for(var j=0;j<host.length;j++) hh=(hh*31+host.charCodeAt(j))>>>0;
+    var da=10+hh%80, pa=Math.max(1,Math.min(100,da-12+h%20));
+    return {url:t,da:da,pa:pa};
+  }
+  function bar(n,cls){return '<div class="dp-score">'+n+'<div class="dp-bar '+cls+'"><i style="width:'+n+'%"></i></div></div>'}
+  function render(rows){
+    body.innerHTML=rows.map(function(r){
+      if(r.error) return '<tr><td class="dp-url">'+esc(r.url)+'</td><td colspan="2" class="dp-err">'+esc(r.error)+'</td></tr>';
+      return '<tr><td class="dp-url">'+esc(r.url)+'</td><td>'+bar(r.da,'')+'</td><td>'+bar(r.pa,'pa')+'</td></tr>';
+    }).join('');
+    res.classList.add('show'); cta.classList.add('show');
+  }
+  function fail(m){err.textContent=m; err.classList.add('show');}
+
+  go.addEventListener('click',function(){
+    err.classList.remove('show'); demo.classList.remove('show');
+    var targets=[], seen={};
+    input.value.split(/\r?\n/).forEach(function(l){var c=clean(l); if(c&&!seen[c]){seen[c]=1;targets.push(c);}});
+    if(!targets.length) return fail('Enter at least one valid domain, like example.com.');
+    if(targets.length>10) return fail('Please check 10 URLs or fewer at a time.');
+
+    go.disabled=true; go.textContent='Checking…';
+    var done=function(){go.disabled=false; go.textContent='Check DA & PA';};
+
+    if(!ENDPOINT){
+      if(!DEMO){ done(); return fail('This tool isn’t connected yet. Please try again later.'); }
+      setTimeout(function(){ render(targets.map(sample)); demo.classList.add('show'); done(); },600);
+      return;
+    }
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:targets})})
+      .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+      .then(function(d){
+        render(targets.map(function(t,i){
+          var m=d.results&&d.results[i];
+          if(!m||m.domain_authority==null) return {url:t,error:'No data found for this URL.'};
+          return {url:t,da:Math.round(m.domain_authority),pa:Math.round(m.page_authority)};
+        }));
+      })
+      .catch(function(){ fail('Something went wrong. Please try again in a moment.'); })
+      .then(done);
+  });
+  input.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter') go.click(); });
+})();
+</script>
+<!-- ===== END DA/PA CHECKER SCRIPT ===== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/auth.js"></script>
@@ -770,11 +894,13 @@ document.querySelectorAll('.tilt').forEach(card=>{
 </script>
 
 <script>
-OneAuth.getUser().then(function(u){
-  if(!u) return;
-  var a=document.querySelector('.nav-login'); if(!a) return;
-  a.textContent='Dashboard'; a.href='/dashboard';
-});
+if(window.OneAuth){
+  OneAuth.getUser().then(function(u){
+    if(!u) return;
+    var a=document.querySelector('.nav-login'); if(!a) return;
+    a.textContent='Dashboard'; a.href='/dashboard';
+  });
+}
 </script>
 </body>
 </html>
