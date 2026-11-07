@@ -272,8 +272,9 @@ body{transition:background .3s, color .3s;}
 #bg-pick{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:90; font-family:'Inter',sans-serif;}
 #bg-pick .bp-btn{background:var(--card); color:var(--ink); border:1.5px solid var(--line); border-radius:99px; padding:10px 18px; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; box-shadow:0 8px 24px rgba(20,18,31,.18);}
 #bg-pick .bp-btn:hover{border-color:var(--primary);}
-#bg-pick .bp-list{display:none; position:absolute; right:0; bottom:54px; width:210px; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:8px; box-shadow:0 16px 40px rgba(20,18,31,.25);}
+#bg-pick .bp-list{display:none; position:absolute; right:0; bottom:54px; width:230px; max-height:65vh; overflow-y:auto; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:8px; box-shadow:0 16px 40px rgba(20,18,31,.25);}
 #bg-pick.open .bp-list{display:block;}
+#bg-pick .bp-h{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--dim); padding:8px 12px 4px;}
 #bg-pick .bp-item{display:block; width:100%; text-align:left; background:none; border:0; color:var(--ink); font:inherit; font-size:14px; padding:9px 12px; border-radius:10px; cursor:pointer;}
 #bg-pick .bp-item:hover{background:var(--line);}
 #bg-pick .bp-item[aria-pressed="true"]{background:var(--primary); color:#fff;}
@@ -884,96 +885,72 @@ document.querySelectorAll('.tilt').forEach(card=>{
     }
   };
 
-  // 2. Lava lamp: warm blobs rising and sinking
-  modes.lava={
-    cols:[[255,92,57],[236,72,153],[255,160,60],[139,92,246],[255,92,57],[236,72,153],[255,190,80]],
-    init:function(){
-      var m=Math.min(w,h), n=this.cols.length;
-      S.b=this.cols.map(function(c,k){return {cx:w*(.08+.84*k/(n-1)),ax:w*.05,sx:rnd(.0003,.0006),sy:rnd(.00018,.00032),ph:rnd(0,6.28),r:m*rnd(.14,.22)};});
-    },
+  // ---- Particle and shape styles (vector drawing) ----
+  var rgb='61,59,243', CORAL='255,92,57', MINT='0,200,150', frame=0, vt=0;
+  function K(c,a){return 'rgba('+c+','+a+')';}
+  function color(){
+    var c=getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    var m=/^#?([0-9a-f]{6})$/i.exec(c);
+    if(m){var n=parseInt(m[1],16); rgb=((n>>16)&255)+','+((n>>8)&255)+','+(n&255);}
+  }
+  modes.orbs.heavy=true;
+  modes.none={ init:function(){}, render:function(){ ctx.clearRect(0,0,W,H); } };
+
+  modes.network={
+    init:function(){var n=Math.max(24,Math.min(80,Math.round(W*H/18000)));S.p=[];for(var i=0;i<n;i++)S.p.push({x:rnd(0,W),y:rnd(0,H),vx:rnd(-.18,.18),vy:rnd(-.18,.18),r:rnd(1.2,2.8)});},
     render:function(t){
-      var B=S.b, bx=[], by=[], br2=[], k, o;
-      for(k=0;k<B.length;k++){
-        o=B[k]; bx[k]=o.cx+Math.sin(t*o.sx+o.ph)*o.ax; by[k]=h*(.5+.62*Math.sin(t*o.sy+o.ph*1.3));
-        br2[k]=o.r*o.r*(1+.15*Math.sin(t*.001+k));
-      }
-      meta(this.cols,bx,by,br2,(dark()?.4:.36)*255);
+      ctx.clearRect(0,0,W,H);
+      var L=130,M=170,P=S.p,i,j,p,q,dx,dy,d;
+      for(i=0;i<P.length;i++){p=P[i];
+        if(!reduce){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;}
+        for(j=i+1;j<P.length;j++){q=P[j];dx=p.x-q.x;dy=p.y-q.y;d=dx*dx+dy*dy;
+          if(d<L*L){ctx.strokeStyle=K(rgb,.22*(1-Math.sqrt(d)/L));ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}}
+        if(mouse){dx=p.x-mouse.x;dy=p.y-mouse.y;d=dx*dx+dy*dy;
+          if(d<M*M){ctx.strokeStyle=K(CORAL,.4*(1-Math.sqrt(d)/M));ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}}
+        ctx.fillStyle=K(rgb,.45);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.2832);ctx.fill();}
     }
   };
-
-  // 3. Plasma flow: warped colour waves
-  modes.plasma={
-    init:function(){
-      var P=[[99,102,241],[139,92,246],[236,72,153],[255,92,57],[56,189,248],[99,102,241]], L=P.length-1, lut=new Uint8Array(768), i, p, a, f;
-      for(i=0;i<256;i++){ p=i/255*L; a=Math.min(L-1,Math.floor(p)); f=p-a;
-        lut[i*3]=P[a][0]+(P[a+1][0]-P[a][0])*f; lut[i*3+1]=P[a][1]+(P[a+1][1]-P[a][1])*f; lut[i*3+2]=P[a][2]+(P[a+1][2]-P[a][2])*f; }
-      S.lut=lut;
-    },
-    render:function(t){
-      var d=img.data, lut=S.lut, tt=t*.0004, i=0, x, y, nx, ny, wx, wy, v, li, A=(dark()?.34:.3)*255;
-      for(y=0;y<h;y++){
-        ny=y/h*3;
-        for(x=0;x<w;x++){
-          nx=x/h*3;
-          wx=nx+Math.sin(ny*1.4+tt*2)*.7; wy=ny+Math.cos(nx*1.4-tt*1.5)*.7;
-          v=Math.sin(wx*2+tt)+Math.sin(wy*2.6-tt*1.2)+Math.sin((wx+wy)*1.8+tt*.7)+Math.sin(Math.sqrt((wx-2)*(wx-2)+(wy-1)*(wy-1))*3-tt);
-          li=(((v+4)/8)*255)|0; if(li<0)li=0; if(li>255)li=255;
-          d[i]=lut[li*3]; d[i+1]=lut[li*3+1]; d[i+2]=lut[li*3+2]; d[i+3]=A; i+=4;
-        }
-      }
-      put();
-    }
+  modes.bubbles={
+    init:function(){var n=Math.max(18,Math.min(50,Math.round(W/38)));S.p=[];for(var i=0;i<n;i++)S.p.push({x:rnd(0,W),y:rnd(0,H),r:rnd(4,22),s:rnd(.25,.8),ph:rnd(0,6.28)});},
+    render:function(t){ctx.clearRect(0,0,W,H);S.p.forEach(function(p){
+      if(!reduce){p.y-=p.s;p.x+=Math.sin(t*.02+p.ph)*.35;if(p.y<-p.r)p.y=H+p.r;}
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.2832);ctx.fillStyle=K(rgb,.06);ctx.fill();ctx.strokeStyle=K(rgb,.28);ctx.lineWidth=1.2;ctx.stroke();});}
   };
-
-  // 4. Silk waves: layered flowing ribbons
-  modes.silk={
-    init:function(){},
-    render:function(t){
-      var tt=t*.0004, L, x, y, g, A=dark()?.2:.17;
-      var cs=[[[99,102,241],[236,72,153]],[[255,92,57],[139,92,246]],[[0,200,150],[56,189,248]],[[236,72,153],[255,92,57]]];
-      octx.clearRect(0,0,w,h);
-      for(L=0;L<4;L++){
-        octx.beginPath(); octx.moveTo(0,h);
-        for(x=0;x<=w;x+=4){ y=h*(.22+.17*L)+Math.sin(x*.012+tt*(L+1)+L*1.7)*h*.12+Math.sin(x*.03-tt*1.4+L)*h*.035; octx.lineTo(x,y); }
-        octx.lineTo(w,h); octx.closePath();
-        g=octx.createLinearGradient(0,0,w,0);
-        g.addColorStop(0,'rgba('+cs[L][0]+','+A+')'); g.addColorStop(1,'rgba('+cs[L][1]+','+A+')');
-        octx.fillStyle=g; octx.fill();
-      }
-      out();
-    }
+  modes.rain={
+    init:function(){S.c=[];for(var x=14;x<W;x+=30)S.c.push({x:x,y:rnd(-H,H),s:rnd(1.2,3.2),l:rnd(60,170)});},
+    render:function(t){ctx.clearRect(0,0,W,H);S.c.forEach(function(c){
+      if(!reduce){c.y+=c.s;if(c.y-c.l>H){c.y=rnd(-120,0);c.s=rnd(1.2,3.2);}}
+      var g=ctx.createLinearGradient(0,c.y-c.l,0,c.y);g.addColorStop(0,K(rgb,0));g.addColorStop(1,K(rgb,.4));
+      ctx.strokeStyle=g;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(c.x,c.y-c.l);ctx.lineTo(c.x,c.y);ctx.stroke();
+      ctx.fillStyle=K(CORAL,.6);ctx.beginPath();ctx.arc(c.x,c.y,2,0,6.2832);ctx.fill();});}
   };
-
-  // 5. Mesh gradient: smooth blended colour field
-  modes.mesh={
-    cols:[[99,102,241],[255,92,57],[236,72,153],[0,200,150],[56,189,248]],
-    init:function(){
-      S.p=this.cols.map(function(c,k){return {cx:w*(.1+.8*((k*.43+.07)%1)),cy:h*(.1+.8*((k*.71+.2)%1)),ax:w*rnd(.15,.3),ay:h*rnd(.15,.3),sx:rnd(.0002,.0004),sy:rnd(.00018,.00036),ph:rnd(0,6.28)};});
-      mpx=S.p[0].cx; mpy=S.p[0].cy;
-    },
-    render:function(t){
-      var P=S.p, n=P.length, px=[], py=[], cols=this.cols, k, o, d=img.data, i=0, x, y, dx, dy, q, wt, sum, r, g, b, inv;
-      var e=Math.pow(Math.min(w,h)*.22,2), A=(dark()?.36:.32)*255;
-      for(k=0;k<n;k++){ o=P[k]; px[k]=o.cx+Math.sin(t*o.sx+o.ph)*o.ax; py[k]=o.cy+Math.cos(t*o.sy+o.ph*1.4)*o.ay; }
-      if(mouse){ mpx+=(mouse.x/SC-mpx)*.05; mpy+=(mouse.y/SC-mpy)*.05; px[0]=mpx; py[0]=mpy; } else { mpx=px[0]; mpy=py[0]; }
-      for(y=0;y<h;y++){
-        for(x=0;x<w;x++){
-          sum=0; r=0; g=0; b=0;
-          for(k=0;k<n;k++){ dx=x-px[k]; dy=y-py[k]; q=dx*dx+dy*dy+e; wt=1/(q*q); sum+=wt; r+=cols[k][0]*wt; g+=cols[k][1]*wt; b+=cols[k][2]*wt; }
-          inv=1/sum; d[i]=r*inv; d[i+1]=g*inv; d[i+2]=b*inv; d[i+3]=A; i+=4;
-        }
-      }
-      put();
-    }
+  modes.ripples={
+    init:function(){S.r=[];for(var i=0;i<4;i++)S.r.push({x:rnd(0,W),y:rnd(0,H),r:rnd(0,200),m:rnd(180,300)});},
+    render:function(t){ctx.clearRect(0,0,W,H);
+      if(!reduce&&t%70===0)S.r.push({x:rnd(0,W),y:rnd(0,H),r:0,m:rnd(180,300)});
+      S.r=S.r.filter(function(o){return o.r<o.m;});
+      S.r.forEach(function(o){if(!reduce)o.r+=1.1;var a=.32*(1-o.r/o.m);
+        ctx.lineWidth=1.5;ctx.strokeStyle=K(rgb,a);ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.2832);ctx.stroke();
+        ctx.strokeStyle=K(CORAL,a*.7);ctx.beginPath();ctx.arc(o.x,o.y,o.r*.6,0,6.2832);ctx.stroke();});}
+  };
+  modes.fireflies={
+    init:function(){var n=Math.max(16,Math.min(40,Math.round(W/50)));S.p=[];for(var i=0;i<n;i++)S.p.push({x:rnd(0,W),y:rnd(0,H),a:rnd(0,6.28),sp:rnd(.2,.6),ph:rnd(0,6.28),c:[rgb,MINT,CORAL][i%3]});},
+    render:function(t){ctx.clearRect(0,0,W,H);S.p.forEach(function(p){
+      if(!reduce){p.a+=rnd(-.08,.08);p.x+=Math.cos(p.a)*p.sp;p.y+=Math.sin(p.a)*p.sp;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;}
+      var al=.25+.55*Math.abs(Math.sin(t*.02+p.ph)),g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,18);
+      g.addColorStop(0,K(p.c,al));g.addColorStop(1,K(p.c,0));ctx.fillStyle=g;ctx.fillRect(p.x-18,p.y-18,36,36);});}
   };
 
   function loop(now){
-    if(now-last>32){ last=now; modes[cur].render(now); }
+    var m=modes[cur];
+    if(m.heavy){ if(now-last>32){ last=now; m.render(now); } }
+    else { if(frame++%60===0) color(); vt++; m.render(vt); }
     raf=requestAnimationFrame(loop);
   }
   function start(){
-    cancelAnimationFrame(raf); S={}; octx.clearRect(0,0,w,h);
+    cancelAnimationFrame(raf); S={}; vt=0; octx.clearRect(0,0,w,h); color();
     modes[cur].init();
+    if(cur==='none'){ ctx.clearRect(0,0,W,H); return; }
     if(reduce) modes[cur].render(4000); else raf=requestAnimationFrame(loop);
   }
   function size(){
@@ -985,19 +962,20 @@ document.querySelectorAll('.tilt').forEach(card=>{
   }
 
   /* ---- picker (preview only) ---- */
-  var NAMES=[['orbs','1. Liquid orbs'],['lava','2. Lava lamp'],['plasma','3. Plasma flow'],['silk','4. Silk waves'],['mesh','5. Mesh gradient']];
-  var saved=null; try{saved=localStorage.getItem('ow-bg2');}catch(e){}
+  var NAMES=[['orbs','1. Liquid orbs'],['network','2. Network'],['bubbles','3. Rising bubbles'],['rain','4. Data rain'],['ripples','5. Ripples'],['fireflies','6. Fireflies']];
+  var saved=null; try{saved=localStorage.getItem('ow-bg3');}catch(e){}
   if(saved&&modes[saved]) cur=saved;
   var box=document.createElement('div'); box.id='bg-pick';
   box.innerHTML='<div class="bp-list" role="group" aria-label="Background animation"></div><button class="bp-btn" type="button" aria-expanded="false">Change background</button>';
   var list=box.firstChild, btn=box.lastChild;
   NAMES.forEach(function(n){
+    if(n[0]==='#'){ var hd=document.createElement('div'); hd.className='bp-h'; hd.textContent=n[1]; list.appendChild(hd); return; }
     var b=document.createElement('button'); b.type='button'; b.className='bp-item'; b.setAttribute('data-m',n[0]); b.textContent=n[1]; list.appendChild(b);
   });
-  function paint(){ [].forEach.call(list.children,function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-m')===cur?'true':'false'); }); }
+  function paint(){ [].forEach.call(list.querySelectorAll('.bp-item'),function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-m')===cur?'true':'false'); }); }
   list.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.bp-item'); if(!b) return;
-    cur=b.getAttribute('data-m'); try{localStorage.setItem('ow-bg2',cur);}catch(x){}
+    cur=b.getAttribute('data-m'); try{localStorage.setItem('ow-bg3',cur);}catch(x){}
     paint(); start();
   });
   btn.addEventListener('click',function(){ var o=box.classList.toggle('open'); btn.setAttribute('aria-expanded',o?'true':'false'); });
@@ -1010,7 +988,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   }
   var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(size,150); });
   var tg=document.getElementById('theme-tg');
-  if(tg) tg.addEventListener('click',function(){ setTimeout(function(){ if(reduce) modes[cur].render(4000); },0); });
+  if(tg) tg.addEventListener('click',function(){ setTimeout(function(){ color(); if(reduce&&cur!=='none') modes[cur].render(4000); },0); });
   paint(); size();
 })();
 </script>
