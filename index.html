@@ -267,6 +267,9 @@ body.su-lock{overflow:hidden;}
 
 /* ---------- Light / dark toggle ---------- */
 body{transition:background .3s, color .3s;}
+#bg-net{position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none;}
+#cursor-glow, .hero-shapes .node{display:none;}
+
 .theme-tg{width:40px; height:40px; border-radius:50%; border:1.5px solid var(--line); background:var(--card); color:var(--ink); font-size:17px; line-height:1; cursor:pointer; flex:none; transition:transform .2s, border-color .2s;}
 .theme-tg:hover{transform:rotate(-12deg) scale(1.06); border-color:var(--primary);}
 .theme-tg:focus-visible{outline:3px solid var(--primary); outline-offset:2px;}
@@ -293,6 +296,7 @@ html[data-theme="dark"] footer .social-links a:hover{background:var(--primary); 
 </style>
 </head>
 <body>
+<canvas id="bg-net" aria-hidden="true"></canvas>
 <div id="cursor-glow"></div>
 
 <header id="hdr">
@@ -816,6 +820,80 @@ document.querySelectorAll('.tilt').forEach(card=>{
     paint();
   });
   paint();
+})();
+</script>
+<script>
+(function(){
+  // Liquid gradient orbs: soft, glossy colour blobs that morph and merge like liquid.
+  var cv=document.getElementById('bg-net'); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d'), oc=document.createElement('canvas'), octx=oc.getContext('2d');
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var COLS=[[99,102,241],[255,92,57],[236,72,153],[0,200,150],[139,92,246],[56,189,248]];
+  var N=COLS.length, SC=5, W=0, H=0, w=0, h=0, img=null, raf=0, last=0;
+  var B=[], bx=[], by=[], br2=[], mouse=null, mpx=0, mpy=0;
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function sm(a,b,v){v=(v-a)/(b-a); v=v<0?0:v>1?1:v; return v*v*(3-2*v);}
+
+  function size(){
+    W=window.innerWidth; H=window.innerHeight; SC=W<700?7:5;
+    w=Math.ceil(W/SC); h=Math.ceil(H/SC);
+    cv.width=W; cv.height=H; oc.width=w; oc.height=h;
+    img=octx.createImageData(w,h);
+    var m=Math.min(w,h);
+    B=[];
+    for(var k=0;k<N;k++) B.push({
+      cx:w*(.12+.76*((k*.381+.11)%1)), cy:h*(.15+.7*((k*.618+.27)%1)),
+      ax:w*rnd(.1,.22), ay:h*rnd(.1,.24),
+      sx:rnd(.00022,.0005), sy:rnd(.0002,.00045), ph:rnd(0,6.28),
+      r:m*rnd(.17,.27)
+    });
+    mpx=B[0].cx; mpy=B[0].cy;
+    if(reduce) render(4000);
+  }
+
+  function render(t){
+    var dark=document.documentElement.getAttribute('data-theme')==='dark';
+    var maxA=(dark?.38:.34)*255, d=img.data, i=0, x, y, k, sum, r, g, b, dx, dy, q, a, m, inv, o;
+    for(k=0;k<N;k++){
+      o=B[k];
+      bx[k]=o.cx+Math.sin(t*o.sx+o.ph)*o.ax;
+      by[k]=o.cy+Math.cos(t*o.sy+o.ph*1.7)*o.ay;
+      br2[k]=o.r*o.r*(1+.12*Math.sin(t*.0009+k*2));
+    }
+    if(mouse){ mpx+=(mouse.x/SC-mpx)*.05; mpy+=(mouse.y/SC-mpy)*.05; bx[0]=mpx; by[0]=mpy; }
+    else { mpx=bx[0]; mpy=by[0]; }
+    for(y=0;y<h;y++){
+      for(x=0;x<w;x++){
+        sum=0; r=0; g=0; b=0;
+        for(k=0;k<N;k++){
+          dx=x-bx[k]; dy=y-by[k]; q=br2[k]/(dx*dx+dy*dy+1);
+          sum+=q; r+=COLS[k][0]*q; g+=COLS[k][1]*q; b+=COLS[k][2]*q;
+        }
+        a=sm(.5,1.5,sum); m=sm(1.9,4.5,sum)*.5; inv=1/sum;
+        d[i]=r*inv*(1-m)+255*m; d[i+1]=g*inv*(1-m)+255*m; d[i+2]=b*inv*(1-m)+255*m; d[i+3]=a*maxA;
+        i+=4;
+      }
+    }
+    octx.putImageData(img,0,0);
+    ctx.clearRect(0,0,W,H);
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    ctx.drawImage(oc,0,0,w,h,0,0,W,H);
+  }
+
+  function loop(now){
+    if(now-last>32){ last=now; render(now); }
+    raf=requestAnimationFrame(loop);
+  }
+
+  if(window.matchMedia&&matchMedia('(pointer:fine)').matches){
+    window.addEventListener('mousemove',function(e){ mouse={x:e.clientX,y:e.clientY}; },{passive:true});
+    document.addEventListener('mouseleave',function(){ mouse=null; });
+  }
+  var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(function(){ size(); },150); });
+  var tg=document.getElementById('theme-tg');
+  if(tg) tg.addEventListener('click',function(){ setTimeout(function(){ if(reduce) render(4000); },0); });
+  size();
+  if(!reduce) raf=requestAnimationFrame(loop);
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
