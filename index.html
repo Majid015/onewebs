@@ -838,7 +838,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   var cv=document.getElementById('bg-net'); if(!cv||!cv.getContext) return;
   var ctx=cv.getContext('2d'), oc=document.createElement('canvas'), octx=oc.getContext('2d');
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var W=0, H=0, w=0, h=0, SC=5, img=null, raf=0, last=0, cur='orbs', mouse=null, mpx=0, mpy=0, S={}, modes={};
+  var W=0, H=0, w=0, h=0, SC=5, img=null, raf=0, last=0, cur='fireflies', mouse=null, mpx=0, mpy=0, S={}, modes={};
   function rnd(a,b){return a+Math.random()*(b-a);}
   function sm(a,b,v){v=(v-a)/(b-a); v=v<0?0:v>1?1:v; return v*v*(3-2*v);}
   function dark(){return document.documentElement.getAttribute('data-theme')==='dark';}
@@ -962,7 +962,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   }
 
   /* ---- picker (preview only) ---- */
-  var NAMES=[['orbs','1. Liquid orbs'],['network','2. Network'],['bubbles','3. Rising bubbles'],['rain','4. Data rain'],['ripples','5. Ripples'],['fireflies','6. Fireflies']];
+  var NAMES=[['fireflies','1. Fireflies'],['orbs','2. Liquid orbs'],['network','3. Network'],['bubbles','4. Rising bubbles'],['rain','5. Data rain'],['ripples','6. Ripples']];
   var saved=null; try{saved=localStorage.getItem('ow-bg3');}catch(e){}
   if(saved&&modes[saved]) cur=saved;
   var box=document.createElement('div'); box.id='bg-pick';
