@@ -141,10 +141,7 @@ nav .links a:hover{color:var(--ink);}
 footer{padding:48px 0; font-size:13px; color:var(--dim);}
 footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;}
 
-/* ---------- DA/PA checker ---------- */
-#checker{padding:100px 0;}
-#checker h2{max-width:620px;}
-#checker .dp-sub{color:var(--dim); max-width:560px; margin-top:14px;}
+/* ---------- Checker tool styles (used by the traffic checker) ---------- */
 .dp-box{margin-top:36px; background:var(--card); border-radius:20px; padding:28px;}
 .dp-box label{display:block; font-size:13.5px; font-weight:600; margin-bottom:8px;}
 .dp-box textarea{width:100%; min-height:110px; resize:vertical; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px;}
@@ -179,6 +176,11 @@ footer .fwrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:1
 .ot-num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px;}
 .ot-inp{width:100%; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px;}
 .ot-inp:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(61,59,243,.12);}
+
+/* ---------- Domain Rating checker ---------- */
+#dr{padding:100px 0;}
+#dr h2{max-width:620px;}
+.dr-pill{display:inline-block; margin-left:8px; font-size:11.5px; font-weight:600; color:#8A5A00; background:#FFF4DB; border-radius:99px; padding:2px 9px; vertical-align:middle;}
 
 /* ---------- Sign up popup ---------- */
 #su{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,31,.55); backdrop-filter:blur(6px); overflow-y:auto;}
@@ -270,7 +272,7 @@ body.su-lock{overflow:hidden;}
       <a href="#process">Process</a>
       <a href="#services">Services</a>
       <a href="#cases">Results</a>
-      <a href="#checker">DA &amp; PA Checker</a>
+      <a href="#dr">DR Checker</a>
       <a href="#traffic">Traffic Checker</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
@@ -358,34 +360,34 @@ body.su-lock{overflow:hidden;}
   </div>
 </section>
 
-<!-- ===== DA/PA CHECKER SECTION ===== -->
-<section id="checker">
+<!-- ===== DOMAIN RATING (DR) CHECKER SECTION ===== -->
+<section id="dr">
   <div class="wrap">
     <div class="label reveal">Free tool</div>
-    <h2 class="reveal">Check any website’s DA &amp; PA.</h2>
-    <p class="dp-sub reveal">Paste up to 10 domains or URLs, one per line, and see their Domain Authority and Page Authority in seconds.</p>
+    <h2 class="reveal">Domain Rating (DR) Checker.</h2>
+    <p class="dp-sub reveal">Enter a domain and see its Domain Rating, a 0 to 100 score of how strong its backlink profile is.</p>
     <div class="dp-box reveal">
-      <label for="dp-in">Domains or URLs</label>
-      <textarea id="dp-in" placeholder="example.com&#10;https://another-site.com/blog/post"></textarea>
+      <label for="dr-in">Domain</label>
+      <input id="dr-in" class="ot-inp" type="text" placeholder="example.com" autocomplete="off" inputmode="url">
       <div class="dp-row">
-        <button class="btn coral" id="dp-go" type="button">Check DA &amp; PA</button>
-        <span class="dp-hint">Scores range from 1 to 100. Higher means stronger.</span>
+        <button class="btn coral" id="dr-go" type="button">Check DR</button>
+        <span class="dp-hint">Scores range from 0 to 100. Higher means stronger.</span>
       </div>
-      <p class="dp-note err" id="dp-err" role="alert"></p>
+      <p class="dp-note err" id="dr-err" role="alert"></p>
     </div>
-    <div class="dp-res" id="dp-res">
+    <div class="dp-res" id="dr-res">
       <table>
-        <thead><tr><th>URL</th><th>Domain Authority</th><th>Page Authority</th></tr></thead>
-        <tbody id="dp-body"></tbody>
+        <thead><tr><th>Domain</th><th>Domain Rating</th></tr></thead>
+        <tbody id="dr-body"></tbody>
       </table>
     </div>
-    <div class="dp-cta" id="dp-cta">
-      <div><h3>Want higher scores?</h3><p>We build the links that move DA and rankings.</p></div>
+    <div class="dp-cta" id="dr-cta">
+      <div><h3>Want a higher DR?</h3><p>We build the backlinks that grow it.</p></div>
       <a href="#pricing" class="btn coral">Get a free link audit</a>
     </div>
   </div>
 </section>
-<!-- ===== END DA/PA CHECKER SECTION ===== -->
+<!-- ===== END DOMAIN RATING (DR) CHECKER SECTION ===== -->
 
 <!-- ===== ORGANIC TRAFFIC CHECKER SECTION ===== -->
 <section id="traffic">
@@ -642,71 +644,6 @@ document.querySelectorAll('.tilt').forEach(card=>{
 });
 </script>
 
-<!-- ===== DA/PA CHECKER SCRIPT ===== -->
-<script>
-(function(){
-  // 1) After deploying worker.js, put its URL here, e.g. "https://da-pa.yourname.workers.dev"
-  var ENDPOINT = "";
-  // 2) Keep false on a live site. Set true only to preview the layout with sample (not real) numbers.
-  var DEMO = false;
-
-  var $ = function(id){return document.getElementById(id)};
-  var go=$('dp-go'), input=$('dp-in'), body=$('dp-body'), res=$('dp-res'), err=$('dp-err'), cta=$('dp-cta');
-
-  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function clean(line){
-    var v=line.trim(); if(!v) return null;
-    if(!/^https?:\/\//i.test(v)) v='https://'+v;
-    try{ var u=new URL(v); if(u.hostname.indexOf('.')<1) return null; return u.hostname.replace(/^www\./,'')+(u.pathname.length>1?u.pathname:''); }catch(e){ return null; }
-  }
-  function sample(t){
-    var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0;
-    var host=t.split('/')[0], hh=0; for(var j=0;j<host.length;j++) hh=(hh*31+host.charCodeAt(j))>>>0;
-    var da=10+hh%80, pa=Math.max(1,Math.min(100,da-12+h%20));
-    return {url:t,da:da,pa:pa};
-  }
-  function bar(n,cls){return '<div class="dp-score">'+n+'<div class="dp-bar '+cls+'"><i style="width:'+n+'%"></i></div></div>'}
-  function render(rows){
-    body.innerHTML=rows.map(function(r){
-      if(r.error) return '<tr><td class="dp-url">'+esc(r.url)+'</td><td colspan="2" class="dp-err">'+esc(r.error)+'</td></tr>';
-      return '<tr><td class="dp-url">'+esc(r.url)+'</td><td>'+bar(r.da,'')+'</td><td>'+bar(r.pa,'pa')+'</td></tr>';
-    }).join('');
-    res.classList.add('show'); cta.classList.add('show');
-  }
-  function fail(m){err.textContent=m; err.classList.add('show');}
-
-  go.addEventListener('click',function(){
-    err.classList.remove('show');
-    var targets=[], seen={};
-    input.value.split(/\r?\n/).forEach(function(l){var c=clean(l); if(c&&!seen[c]){seen[c]=1;targets.push(c);}});
-    if(!targets.length) return fail('Enter at least one valid domain, like example.com.');
-    if(targets.length>10) return fail('Please check 10 URLs or fewer at a time.');
-
-    go.disabled=true; go.textContent='Checking…';
-    var done=function(){go.disabled=false; go.textContent='Check DA & PA';};
-
-    if(!ENDPOINT){
-      if(!DEMO){ done(); return fail('This tool isn’t connected yet. Please try again later.'); }
-      setTimeout(function(){ render(targets.map(sample)); done(); },600);
-      return;
-    }
-    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:targets})})
-      .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
-      .then(function(d){
-        render(targets.map(function(t,i){
-          var m=d.results&&d.results[i];
-          if(!m||m.domain_authority==null) return {url:t,error:'No data found for this URL.'};
-          return {url:t,da:Math.round(m.domain_authority),pa:Math.round(m.page_authority)};
-        }));
-      })
-      .catch(function(){ fail('Something went wrong. Please try again in a moment.'); })
-      .then(done);
-  });
-  input.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter') go.click(); });
-})();
-</script>
-<!-- ===== END DA/PA CHECKER SCRIPT ===== -->
-
 <!-- ===== ORGANIC TRAFFIC CHECKER SCRIPT ===== -->
 <script>
 (function(){
@@ -715,6 +652,7 @@ document.querySelectorAll('.tilt').forEach(card=>{
   // 2) Sample numbers for previewing only (always labelled on the page). Set to false before publishing.
   var DEMO = true;
 
+  if(!ENDPOINT && !DEMO){ var s2=document.getElementById('traffic'), l2=document.querySelector('a[href="#traffic"]'); if(s2) s2.style.display='none'; if(l2) l2.style.display='none'; return; }
   var $ = function(id){return document.getElementById(id)};
   var go=$('ot-go'), input=$('ot-in'), db=$('ot-db'), body=$('ot-body'), res=$('ot-res'), err=$('ot-err'), cta=$('ot-cta');
   var fmt=function(n){return Number(n).toLocaleString('en-US')};
@@ -749,7 +687,6 @@ document.querySelectorAll('.tilt').forEach(card=>{
     var done=function(){go.disabled=false; go.textContent='Check traffic';};
 
     if(!ENDPOINT){
-      if(!DEMO){ done(); return fail('This tool isn’t connected yet. Please try again later.'); }
       setTimeout(function(){ render(targets.map(sample),true); done(); },600);
       return;
     }
@@ -769,6 +706,68 @@ document.querySelectorAll('.tilt').forEach(card=>{
 })();
 </script>
 <!-- ===== END ORGANIC TRAFFIC CHECKER SCRIPT ===== -->
+
+<!-- ===== DOMAIN RATING (DR) CHECKER SCRIPT ===== -->
+<script>
+(function(){
+  // 1) After deploying worker-dr.js, put its URL here.
+  var ENDPOINT = "";
+  // 2) Preview only: shows an example result, clearly marked "Example". Set to false before publishing.
+  var DEMO = true;
+
+  if(!ENDPOINT && !DEMO){ var s3=document.getElementById('dr'), l3=document.querySelector('a[href="#dr"]'); if(s3) s3.style.display='none'; if(l3) l3.style.display='none'; return; }
+  var $ = function(id){return document.getElementById(id)};
+  var go=$('dr-go'), input=$('dr-in'), body=$('dr-body'), res=$('dr-res'), err=$('dr-err'), cta=$('dr-cta');
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function clean(line){
+    var v=line.trim(); if(!v) return null;
+    if(!/^https?:\/\//i.test(v)) v='https://'+v;
+    try{ var u=new URL(v); if(u.hostname.indexOf('.')<1) return null; return u.hostname.replace(/^www\./,''); }catch(e){ return null; }
+  }
+  function sample(t){
+    var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0;
+    return {url:t,dr:5+h%90,example:true};
+  }
+  function bar(n){return '<div class="dp-score">'+n+'<div class="dp-bar"><i style="width:'+n+'%"></i></div></div>'}
+  function render(rows){
+    body.innerHTML=rows.map(function(r){
+      if(r.error) return '<tr><td class="dp-url">'+esc(r.url)+'</td><td class="dp-err">'+esc(r.error)+'</td></tr>';
+      return '<tr><td class="dp-url">'+esc(r.url)+(r.example?'<span class="dr-pill">Example</span>':'')+'</td><td>'+bar(r.dr)+'</td></tr>';
+    }).join('');
+    res.classList.add('show'); cta.classList.add('show');
+  }
+  function fail(m){err.textContent=m; err.classList.add('show');}
+
+  go.addEventListener('click',function(){
+    err.classList.remove('show');
+    var c=clean(input.value.split(/\r?\n/)[0]);
+    if(!c) return fail('Enter a valid domain, like example.com.');
+    var targets=[c];
+
+    go.disabled=true; go.textContent='Checking…';
+    var done=function(){go.disabled=false; go.textContent='Check DR';};
+
+    if(!ENDPOINT){
+      setTimeout(function(){ render(targets.map(sample)); done(); },600);
+      return;
+    }
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:targets})})
+      .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+      .then(function(d){
+        render(targets.map(function(t,i){
+          var m=d.results&&d.results[i];
+          if(!m||m.domain_rating==null) return {url:t,error:'No data found for this domain.'};
+          return {url:t,dr:Math.round(m.domain_rating)};
+        }));
+      })
+      .catch(function(){ fail('Something went wrong. Please try again in a moment.'); })
+      .then(done);
+  });
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+})();
+</script>
+<!-- ===== END DOMAIN RATING (DR) CHECKER SCRIPT ===== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/auth.js"></script>
